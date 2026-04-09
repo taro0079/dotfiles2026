@@ -1,0 +1,25 @@
+try %{ 
+
+    eval %sh{kak-lsp}
+    hook global WinSetOption filetype=php %{
+        lsp-enable-window
+    }
+    map global goto d <esc>:lsp-definition<ret> -docstring "LSP definition"
+    map global goto r <esc>:lsp-references<ret> -docstring "LSP references"
+    map global goto y <esc>:lsp-type-definition<ret> -docstring "LSP type definition"
+ } catch %{
+    echo -debug "Error while evaluating 'kak-lsp' configuration: %val{error}"
+
+    set-option -add current plug_conf_errors "Error while evaluating 'kak-lsp' configuration:"
+    set-option -add current plug_conf_errors %sh{ printf "\n    " }
+    set-option -add current plug_conf_errors %val{error}
+    set-option -add current plug_conf_errors %sh{ printf "\n\n" }
+
+    hook -once -group plug-conf-err global WinDisplay .* %{
+        info -style modal -title "plug.kak error" "%opt{plug_conf_errors}"
+        on-key %{
+            info -style modal
+            execute-keys -with-maps -with-hooks %val{key}
+        }
+    }
+}

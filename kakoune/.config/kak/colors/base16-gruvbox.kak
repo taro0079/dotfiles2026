@@ -1,0 +1,1 @@
+/Users/taro_morita/.config/kak/plugins/base16-gruvbox.kak

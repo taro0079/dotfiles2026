@@ -1,0 +1,35 @@
+map global normal '#' :comment-line<ret>
+add-highlighter global/ number-lines -relative -hlcursor
+add-highlighter global/ show-matching
+
+source "%val{config}/plugins/plug.kak/rc/plug.kak"
+plug 'andreyorst/plug.kak' noload
+plug 'alexherbo2/auto-pairs.kak' config %{
+    enable-auto-pairs
+}
+
+plug 'andreyorst/smarttab.kak'
+plug 'occivink/kakoune-find'
+
+plug "andreyorst/base16-gruvbox.kak" theme config %{
+#    colorscheme base16-gruvbox-dark-soft
+}
+
+plug "andreyorst/fzf.kak" config %{
+    map -docstring 'fzf mode' global normal '<c-p>' ': fzf-mode<ret>'
+}
+
+plug "kak-lsp/kak-lsp" noload config %{
+    eval %sh{kak-lsp}
+    hook global WinSetOption filetype=php %{
+        lsp-enable-window
+    }
+    map global goto d <esc>:lsp-definition<ret> -docstring "LSP definition"
+    map global goto r <esc>:lsp-references<ret> -docstring "LSP references"
+    map global goto y <esc>:lsp-type-definition<ret> -docstring "LSP type definition"
+}
+
+add-highlighter global/ column 80 default,rgb:303030
+set-option global modelinefmt '%val{bufname} %val{cursor_line}:%val{cursor_char_column} {{context_info}} {{mode_info}} - %val{client}@[%val{session}]'
+set-option global modelinefmt "%opt{lsp_modeline} %opt{modelinefmt}"
+

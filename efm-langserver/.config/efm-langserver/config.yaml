@@ -1,0 +1,24 @@
+version: 2
+root-markers:
+  - .git/
+  - composer.json
+
+tools:
+  phpmd: &phpmd
+    lint-command: 'phpmd "${INPUT}" text .phpmd/phpmd.xml'
+    lint-stdin: false
+    lint-ignore-exit-code: true
+    lint-formats:
+      - '%f:%l	%m'
+
+  phpstan: &phpstan
+    lint-command: 'test -x vendor/bin/phpstan && vendor/bin/phpstan analyse --error-format=raw --no-progress "${INPUT}"'
+    lint-stdin: false
+    lint-ignore-exit-code: true
+    lint-formats:
+      - '%f:%l:%m'
+
+languages:
+  php:
+    - <<: *phpmd
+    - <<: *phpstan
