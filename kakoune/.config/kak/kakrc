@@ -1,6 +1,7 @@
-map global normal '#' :comment-line<ret>
-add-highlighter global/ number-lines -relative -hlcursor
-add-highlighter global/ show-matching
+define-command php-cs-fix %{
+    nop %sh{ php-cs-fixer fix "$kak_buffile" --quiet}
+    edit!
+}
 
 source "%val{config}/plugins/plug.kak/rc/plug.kak"
 plug 'andreyorst/plug.kak' noload
@@ -12,12 +13,19 @@ plug 'andreyorst/smarttab.kak'
 plug 'occivink/kakoune-find'
 
 plug "andreyorst/base16-gruvbox.kak" theme config %{
-#    colorscheme base16-gruvbox-dark-soft
+    colorscheme base16-gruvbox-dark-medium
+}
+
+plug 'jordan-yee/kakoune-git-mode' config %{
+    declare-git-mode
+    map global user g ': enter-user-mode git<ret>' -docstring "git mode"
 }
 
 plug "andreyorst/fzf.kak" config %{
     map -docstring 'fzf mode' global normal '<c-p>' ': fzf-mode<ret>'
 }
+
+plug "tom-huntington/simple-git-gutter.kak"
 
 plug "kak-lsp/kak-lsp" noload config %{
     eval %sh{kak-lsp}
@@ -29,7 +37,9 @@ plug "kak-lsp/kak-lsp" noload config %{
     map global goto y <esc>:lsp-type-definition<ret> -docstring "LSP type definition"
 }
 
+map global normal '#' :comment-line<ret>
+add-highlighter global/ number-lines -relative -hlcursor
+add-highlighter global/ show-matching
 add-highlighter global/ column 80 default,rgb:303030
 set-option global modelinefmt '%val{bufname} %val{cursor_line}:%val{cursor_char_column} {{context_info}} {{mode_info}} - %val{client}@[%val{session}]'
 set-option global modelinefmt "%opt{lsp_modeline} %opt{modelinefmt}"
-

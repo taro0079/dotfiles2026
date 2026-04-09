@@ -1,10 +1,11 @@
 try %{ 
 
-    colorscheme base16-gruvbox-dark-medium
+    declare-git-mode
+    map global user g ': enter-user-mode git<ret>' -docstring "git mode"
  } catch %{
-    echo -debug "Error while evaluating 'base16-gruvbox.kak' configuration: %val{error}"
+    echo -debug "Error while evaluating 'kakoune-git-mode' configuration: %val{error}"
 
-    set-option -add current plug_conf_errors "Error while evaluating 'base16-gruvbox.kak' configuration:"
+    set-option -add current plug_conf_errors "Error while evaluating 'kakoune-git-mode' configuration:"
     set-option -add current plug_conf_errors %sh{ printf "\n    " }
     set-option -add current plug_conf_errors %val{error}
     set-option -add current plug_conf_errors %sh{ printf "\n\n" }
