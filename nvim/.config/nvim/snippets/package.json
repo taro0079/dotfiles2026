@@ -1,0 +1,12 @@
+{
+    "categories": ["Snippets"],
+    "name": "my snippets",
+    "contributes": {
+        "snippets": [
+            {
+                "language": "php",
+                "path": "php.json"
+            }
+        ]
+    }
+}

@@ -1,0 +1,15 @@
+{
+    "remark": "",
+    "recongnized_at": "created_at",
+    "value": "price",
+    "ex_item_id": "経費科目ID",
+    "dr_excise_id": "税区分ID",
+    "invoice_registration_number": "インボイス番号",
+    "memo": "スプレッドシートの出力結果",
+    "ex_transaction_attendant_representative_attributes": {
+        "own_name": "森田 太郎"
+    },
+    "ex_transaction_attendant_count_attributes": {
+        "own_count": "参加者"
+    }
+}

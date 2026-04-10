@@ -1,0 +1,209 @@
+{
+	"php": {
+		"prefix": "php",
+		"body": [
+			"\t<?php",
+			"\tdeclare(strict_types=1);",
+			"",
+			"\tnamespace ${1:Namespace};",
+			"",
+			"\tclass ${2:className}",
+			"\t{",
+			"\t\tpublic function __construct(${4:arguments})",
+			"\t\t{",
+			"\t\t\t${0:Constructor}",
+			"\t\t}",
+			"\t}"
+		]
+	},
+	"docvar": {
+		"prefix": "docvar",
+		"body": [
+			"    /**",
+			"     * ${1:var}${2:description}",
+			"     *",
+			"     * @return ${3:type} ${1:var}",
+			"     */"
+		]
+	},
+	"prop": {
+		"prefix": "prop",
+		"body": ["    private ${1: type} \\$${1:var};"]
+	},
+	"ormcol": {
+		"prefix": "ormcol",
+		"body": [
+			"    #[ORM\\Column(type: ${1:type}, name: \"${2:column_name}\", ${3:, options: [\"default\" => \"${4:default_value}\" ]})]",
+			"    private ${5: type} \\$${6:var};"
+		]
+	},
+	"fn": {
+		"prefix": "fn",
+		"description": "function",
+		"body": [
+			"\tpublic function ${1:methodName}(${2:arguments}): ${3:returnType}",
+			"\t{",
+			"\t\t${0:${VISUAL}}",
+			"\t}"
+		]
+	},
+	"create_test": {
+		"prefix": "create_test",
+		"description": "create test method",
+		"body": [
+			"    /**",
+			"     * @test",
+			"     */",
+			"    public function ${1:testMethodName}(): void",
+			"    {",
+			"        ${0:${VISUAL}}",
+			"    }"
+		]
+	},
+	"c": {
+		"prefix": "c",
+		"body": [
+			"\tclass ${1:`vim_snippets#Filename()`}",
+			"\t{",
+			"\t\t${0:${VISUAL}}",
+			"\t}"
+		]
+	},
+	"t.": {
+		"prefix": "t.",
+		"body": ["\t\\$this->"]
+	},
+	"f": {
+		"prefix": "f",
+		"body": ["\tfunction ${1}(${3})", "\t{", "\t\t${0:${VISUAL}}", "\t}"]
+	},
+	"gm": {
+		"prefix": "gm",
+		"description": "PHP Class Getter",
+		"body": [
+			"\t/**",
+			"\t * Gets the value of ${1:foo}",
+			"\t *",
+			"\t * @return ${2:string}",
+			"\t */",
+			"\t${3:public} function get${4:$1}()",
+			"\t{",
+			"\t\treturn \\$this->${5:$1};",
+			"\t}"
+		]
+	},
+	"=?:": {
+		"prefix": "=?:",
+		"body": ["\t\\$${1:foo} = ${2:true} ? ${3:a} : ${4:b}"]
+	},
+	"?:": {
+		"prefix": "?:",
+		"body": ["\t${1:true} ? ${2:a} : ${0}"]
+	},
+	"/*": {
+		"prefix": "/*",
+		"body": ["\t/**", "\t * ${0}", "\t */"]
+	},
+	"doc_f": {
+		"prefix": "doc_f",
+		"body": [
+			"\t/**",
+			"\t * ${4:undocumented function}",
+			"\t *",
+			"\t * @param ${5: param}",
+			"\t * @return ${6:void}",
+			"\t */",
+			"\t${1}function ${2}(${3})",
+			"\t{${0}",
+			"\t}"
+		]
+	},
+	"inits": {
+		"prefix": "inits",
+		"description": "constructor",
+		"body": [
+			"\tpublic function __construct(${2:arguments})",
+			"\t{",
+			"\t\t${0}",
+			"\t}"
+		]
+	},
+	"class": {
+		"prefix": "class",
+		"body": [
+			"\t/**",
+			"\t * ${1}",
+			"\t */",
+			"\tclass ${2:`vim_snippets#Filename()`}",
+			"\t{",
+			"\t\t${3}",
+			"\t\t/**",
+			"\t\t * ${4}",
+			"\t\t */",
+			"\t\t${5:public} function ${6:__construct}(${7:argument})",
+			"\t\t{",
+			"\t\t\t${0}",
+			"\t\t}",
+			"\t}"
+		]
+	},
+	"if": {
+		"prefix": "if",
+		"description": "if (condition) { ... }",
+		"body": ["\tif (${1}) {", "\t\t${0:${VISUAL}}", "\t}"]
+	},
+	"ifn": {
+		"prefix": "ifn",
+		"description": "if (!condition) { ... }",
+		"body": ["\tif (!${1}) {", "\t\t${0:${VISUAL}}", "\t}"]
+	},
+	"ife": {
+		"prefix": "ife",
+		"description": "if (cond) { ... } else { ... }",
+		"body": [
+			"\tif (${1}) {",
+			"\t\t${0:${VISUAL}}",
+			"\t} else {",
+			"\t\t${2}",
+			"\t}"
+		]
+	},
+	"switch": {
+		"prefix": "switch",
+		"description": "switch($var) { case 'xyz': ... default: .... }",
+		"body": [
+			"\tswitch (\\$${1:variable}) {",
+			"\t\tcase '${2:value}':",
+			"\t\t\t${3}",
+			"\t\t\tbreak;",
+			"\t\t${0}",
+			"\t\tdefault:",
+			"\t\t\t${4}",
+			"\t\t\tbreak;",
+			"\t}"
+		]
+	},
+	"foreach": {
+		"prefix": "foreach",
+		"description": "foreach ($var as $value) { .. }",
+		"body": [
+			"\tforeach (\\$${1:variable} as \\$${2:value}) {",
+			"\t\t${0:${VISUAL}}",
+			"\t}"
+		]
+	},
+	"array": {
+		"prefix": "array",
+		"description": "$... = ['' => ]",
+		"body": ["\t\\$${1:arrayName} = ['${2}' => ${3}];"]
+	},
+	"vd": {
+		"prefix": "vd",
+		"body": ["\tvar_dump(${0});"]
+	},
+	"d": {
+		"prefix": "d",
+		"description": "ddh",
+		"body": ["\tddh(${0:val});"]
+	}
+}

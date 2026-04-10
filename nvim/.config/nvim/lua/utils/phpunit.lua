@@ -1,0 +1,32 @@
+-- -- RPST PHPUnit リモート実行ユーティリティ
+-- local M = {}
+--
+-- -- 設定（必要に応じて変更）
+-- M.config = {
+--   remote_host = "dev-tmorita",
+--   user = "taro_morita",
+--   base_path = "/var/www/rpst-v2/dev",
+--   phpunit_config = "/var/www/rpst-v2/dev/tests/app/phpunit/v9/phpunit.xml.dist",
+-- }
+--
+-- -- リモートでPHPUnitを実行
+-- function M.run_remote()
+--   local cfg = M.config
+--   local test_target_path = string.format("%s/%s", cfg.base_path, vim.fn.expand("%:."))
+--   local phpunit_cmd =
+--     string.format("php %s/vendor/bin/phpunit -c %s %s", cfg.base_path, cfg.phpunit_config, test_target_path)
+--   local full_cmd = string.format("ssh %s@%s '%s'", cfg.user, cfg.remote_host, phpunit_cmd)
+--
+--   -- 非同期でターミナルに表示
+--   vim.cmd("vsplit")
+--   vim.cmd("terminal " .. full_cmd)
+-- end
+--
+-- -- コマンドを登録
+-- function M.setup()
+--   vim.api.nvim_create_user_command("RpstPhpunit", function()
+--     M.run_remote()
+--   end, { desc = "RPST PHPUnit をリモートで実行" })
+-- end
+--
+-- return M

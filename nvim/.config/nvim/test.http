@@ -1,0 +1,14 @@
+curl -X POST "https://expense.moneyforward.com/api/external/v1/offices/[OFFICE_ID]/me/ex_transactions" \
+     -H "Authorization: Bearer [YOUR_ACCESS_TOKEN]" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "ex_transaction": {
+         "remark": "ランチ代（打ち合わせ）",
+         "recognized_at": "2026-03-01",
+         "value": 1100,
+         "ex_item_id": "[経費科目のID]",
+         "memo": "プロジェクトAのキックオフ",
+         "currency": "JPY",
+         "invoice_registration_number": "T1234567891012"
+       }
+     }'
