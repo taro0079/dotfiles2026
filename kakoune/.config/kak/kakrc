@@ -1,8 +1,54 @@
+# format the current buffer file by php-cs-fixer 
 define-command php-cs-fix %{
     nop %sh{ php-cs-fixer fix "$kak_buffile" --quiet}
     edit!
 }
 
+# transfer source code of rpst-v2 to remote server
+define-command send-rpstv2 %{
+    nop %sh{ transport_rpstv2.rb "$kak_bufname" > /dev/null 2>&1 &}
+}
+
+
+# remote serverでrpst-v2のテストを実行する
+define-command v2test %{
+    # terminal sh -c "remote_phpunit_rpstv2.rb '$kak_bufname'; echo 'done';read"
+    nop %sh{
+        zellij run -- remote_phpunit_rpstv2.rb "$kak_bufname"
+    }
+}
+
+# the command opening test runner in web browser
+define-command open-testrunner -docstring "open rpst-x test runner in web browser" %{
+    nop %sh{
+        open 'https://tmorita-newrpst-dev74.precs.net/ci/cmd/sandbox/test_runner'
+    }
+}
+
+# transfer the buffer file to remote server automatically
+hook global BufWritePost .*/ghq/github.com/PRECS-Inc/rpst-v2/.* %{
+    send-rpstv2
+}
+# open yazi as a file manager
+define-command yazi -docstring 'open yazi in current buffer dir' %{
+    evaluate-commands %sh{
+        # 一時ファイルを作成
+        tmp=$(mktemp)
+        # カレントバッファのディレクトリを取得
+        dir=$(dirname "$kak_buffile")
+        
+        # terminalコマンドを文字列として組み立てて出力する
+        # %{ ... } で囲むことでクォートの競合を避ける
+        echo "terminal sh -c %{
+            yazi '$dir' --chooser-file='$tmp'
+            if [ -f '$tmp' ]; then
+                files=\$(cat '$tmp')
+                rm -f '$tmp'
+                [ -n \"\$files\" ] && kak -p '$kak_session' -e \"evaluate-commands -client '$kak_client' edit \$files\"
+            fi
+        }"
+    }
+}
 source "%val{config}/plugins/plug.kak/rc/plug.kak"
 plug 'andreyorst/plug.kak' noload
 plug 'alexherbo2/auto-pairs.kak' config %{
@@ -11,11 +57,12 @@ plug 'alexherbo2/auto-pairs.kak' config %{
 
 plug 'andreyorst/smarttab.kak'
 plug 'occivink/kakoune-find'
-
 plug "andreyorst/base16-gruvbox.kak" theme config %{
-    colorscheme base16-gruvbox-dark-medium
+    # colorscheme base16-gruvbox-dark-medium
 }
-
+plug "taro0079/tokyonight.kak" theme config %{
+    colorscheme tokyonight
+}
 plug 'jordan-yee/kakoune-git-mode' config %{
     declare-git-mode
     map global user g ': enter-user-mode git<ret>' -docstring "git mode"
@@ -32,14 +79,44 @@ plug "kak-lsp/kak-lsp" noload config %{
     hook global WinSetOption filetype=php %{
         lsp-enable-window
     }
+
+    map global user l ':enter-user-mode lsp<ret>' -docstring "LSP Mode"
     map global goto d <esc>:lsp-definition<ret> -docstring "LSP definition"
     map global goto r <esc>:lsp-references<ret> -docstring "LSP references"
+    map global goto i <esc>:lsp-implementation<ret> -docstring "LSP implementation"
     map global goto y <esc>:lsp-type-definition<ret> -docstring "LSP type definition"
+
+    map global user a <esc>:lsp-code-actions<ret> -docstring 'LSP code actions'
+    map global user R <esc>:lsp-rename-prompt<ret> -docstring 'LSP rename'
+
+    map global insert <tab> '<a-;>:try lsp-snippets-select-next-placeholders catch %{ execute-keys -with-hooks <lt>tab> }<ret>'
+
+    map global object a '<a-semicolon>lsp-object<ret>' -docstring 'LSP any symbol'
+    map global object <a-a> '<a-semicolon>lsp-object<ret>' -docstring 'LSP any symbol'
+    map global object f '<a-semicolon>lsp-object Function Method<ret>' -docstring 'LSP function or method'
+    map global object t '<a-semicolon>lsp-object Class Interface Module Namespace Struct<ret>' -docstring 'LSP class or module'
+    map global object d '<a-semicolon>lsp-diagnostic-object error warning<ret>' -docstring 'LSP error and warnings'
+    map global object D '<a-semicolon>lsp-diagnostic-object error<ret>' -docstring 'LSP error'
+
 }
 
 map global normal '#' :comment-line<ret>
+map global user y '<a-|>pbcopy<ret>' -docstring "yank to clipboard"
 add-highlighter global/ number-lines -relative -hlcursor
 add-highlighter global/ show-matching
+add-highlighter global/ dynregex '%reg{/}' 0:+bu
 add-highlighter global/ column 80 default,rgb:303030
 set-option global modelinefmt '%val{bufname} %val{cursor_line}:%val{cursor_char_column} {{context_info}} {{mode_info}} - %val{client}@[%val{session}]'
 set-option global modelinefmt "%opt{lsp_modeline} %opt{modelinefmt}"
+
+
+#--- 補完候補の選択remap
+hook global InsertCompletionShow .* %{
+    map window insert <tab> <c-n> -docstring "next completion"
+    map window insert <s-tab> <c-p> -docstring "prev completion"
+}
+
+hook global InsertCompletionHide .* %{
+    unmap window insert <tab> <c-n>
+    unmap window insert <s-tab> <c-p>
+}

@@ -1,6 +1,6 @@
 try %{ 
 
-    colorscheme base16-gruvbox-dark-medium
+    # colorscheme base16-gruvbox-dark-medium
  } catch %{
     echo -debug "Error while evaluating 'base16-gruvbox.kak' configuration: %val{error}"
 

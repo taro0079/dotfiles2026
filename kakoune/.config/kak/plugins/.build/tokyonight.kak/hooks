@@ -1,0 +1,2 @@
+
+[ -d "/Users/taro_morita/.config/kak/colors" ] || mkdir -p "/Users/taro_morita/.config/kak/colors"; ln -sf "$PWD" "/Users/taro_morita/.config/kak/colors"

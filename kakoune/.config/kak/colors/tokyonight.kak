@@ -1,0 +1,1 @@
+/Users/taro_morita/ghq/github.com/taro0079/dotfiles2026/kakoune/.config/kak/plugins/tokyonight.kak
