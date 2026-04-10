@@ -1,0 +1,17 @@
+[tasks.phpunit-rpstapi]
+description = "phpunit for rpst-api"
+run = "docker compose run --rm devcontainer phpunit -d memory_limit=-1"
+
+[tasks.mysql-rpstapi]
+description = "mysql for rpst-api"
+run = "docker compose run --rm devcontainer mysql -u app_user -p -h database"
+
+[settings]
+idiomatic_version_file_enable_tools = ["ruby"]
+
+[tools]
+node = "lts"
+php = "8.3"
+ruby = "3"
+yarn = "1.22.15"
+
