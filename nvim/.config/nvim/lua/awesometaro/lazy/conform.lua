@@ -35,7 +35,7 @@ return {
       },
     })
 
-    vim.keymap.set("n", "<leader>f", function()
+    vim.keymap.set("n", "<leader>F", function()
       require("conform").format({ bufnr = 0 })
     end, { desc = "Conform: format code" })
   end,
