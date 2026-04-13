@@ -1,7 +1,7 @@
 try %{ 
 
     eval %sh{kak-lsp}
-    hook global WinSetOption filetype=php %{
+    hook global WinSetOption filetype=(php|go) %{
         lsp-enable-window
     }
 

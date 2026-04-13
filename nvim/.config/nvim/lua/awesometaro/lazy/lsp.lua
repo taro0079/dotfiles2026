@@ -76,7 +76,6 @@ return {
                   globals = { "vim" },
                 },
                 workspace = {
-                  library = vim.api.nvim_get_runtime_file("", true),
                   checkThirdParty = false,
                 },
                 format = {
@@ -140,6 +139,7 @@ return {
       }),
       sources = cmp.config.sources({
         { name = "copilot", group_index = 2 },
+        { name = "lazydev", group_index = 0 },
         { name = "nvim_lsp" },
         { name = "luasnip" }, -- For luasnip users.
       }, {

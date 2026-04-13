@@ -76,7 +76,7 @@ plug "tom-huntington/simple-git-gutter.kak"
 
 plug "kak-lsp/kak-lsp" noload config %{
     eval %sh{kak-lsp}
-    hook global WinSetOption filetype=php %{
+    hook global WinSetOption filetype=(php|go) %{
         lsp-enable-window
     }
 
