@@ -1,6 +1,6 @@
 try %{ 
 
-    colorscheme tokyonight
+    # colorscheme tokyonight
  } catch %{
     echo -debug "Error while evaluating 'tokyonight.kak' configuration: %val{error}"
 

@@ -18,6 +18,12 @@ define-command v2test %{
     #}
 }
 
+define-command pathcopy %{
+    nop %sh{
+        echo "$kak_bufname" | pbcopy
+    }
+}
+
 # the command opening test runner in web browser
 define-command open-testrunner -docstring "open rpst-x test runner in web browser" %{
     nop %sh{
@@ -61,7 +67,7 @@ plug "andreyorst/base16-gruvbox.kak" theme config %{
     # colorscheme base16-gruvbox-dark-medium
 }
 plug "taro0079/tokyonight.kak" theme config %{
-    colorscheme tokyonight
+    # colorscheme tokyonight
 }
 plug 'jordan-yee/kakoune-git-mode' config %{
     declare-git-mode
