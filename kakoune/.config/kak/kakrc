@@ -12,10 +12,10 @@ define-command send-rpstv2 %{
 
 # remote serverでrpst-v2のテストを実行する
 define-command v2test %{
-    # terminal sh -c "remote_phpunit_rpstv2.rb '$kak_bufname'; echo 'done';read"
-    nop %sh{
-        zellij run -- remote_phpunit_rpstv2.rb "$kak_bufname"
-    }
+    terminal sh -c "remote_phpunit_rpstv2.rb '%val{bufname}'; echo 'done';read"
+    #nop %sh{
+        #zellij run -- remote_phpunit_rpstv2.rb "$kak_bufname"
+    #}
 }
 
 # the command opening test runner in web browser
