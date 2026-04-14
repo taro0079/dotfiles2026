@@ -1,0 +1,9 @@
+font-family = "CaskaydiaMono Nerd Font"
+font-size = 15
+font-thicken=true
+font-feature=-calt, -liga, -dlig
+theme = tokyonight
+window-padding-x = 0
+cursor-style = block
+fullscreen = false
+cursor-opacity = 0.7
