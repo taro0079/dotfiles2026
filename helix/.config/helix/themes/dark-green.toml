@@ -1,0 +1,122 @@
+# author Taro Morita : kurodake-green <none>
+# concept : black x green only, high-contrast, eyes-friendly night theme
+
+# ===== Interface =====
+"ui.background"               = { bg = "black" }                   # 背景（限りなく黒に近い緑黒）
+"ui.window"                   = { fg = "edge" }                    # 分割境界
+"ui.text"                     = "fg"                               # 既定テキスト色（やや落ち着いた緑）
+
+"special"                     = "accent"                           # ファジーマッチなど
+"ui.background.separator"     = { fg = "edge" }
+"ui.text.focus"               = { modifiers = ["reversed"] }
+
+"ui.virtual.ruler"            = { fg = "dim", bg = "shadow", modifiers = ["reversed"] }
+"ui.virtual.whitespace"       = "dim"
+"ui.virtual.indent-guide"     = "edge"
+
+# Statusline（状態別も緑のみで表現）
+"ui.statusline"               = { fg = "base", bg = "accent" }     # アクティブ
+"ui.statusline.inactive"      = { fg = "muted", bg = "black2" }    # 非アクティブ
+"ui.statusline.normal"        = { fg = "base",  bg = "accent" }
+"ui.statusline.insert"        = { fg = "base",  bg = "accent2" }   # 少し明るい緑
+"ui.statusline.select"        = { fg = "base",  bg = "accent3" }   # 黄緑寄り
+
+# Cursor / Cursorline / Selection
+"ui.cursor"                   = { fg = "base", bg = "cursor" }
+"ui.cursor.insert"            = { fg = "base", bg = "cursor" }
+"ui.cursor.select"            = { fg = "base", bg = "cursor" }
+"ui.cursor.match"             = { bg = "glow", modifiers = ["dim"] }
+"ui.cursor.primary"           = { fg = "base", bg = "cursor", modifiers = ["slow_blink"] }
+"ui.cursor.secondary"         = "glow"
+"ui.cursorline.primary"       = { fg = "accent3", underline = { style = "line" } }
+"ui.cursorline.secondary"     = { fg = "accent3", underline = { style = "line" } }
+"ui.selection"                = { fg = "sel_fg", bg = "sel_bg" }   # ★必須（緑の反転
+
+# Menus / Popups
+"ui.menu"                     = { fg = "fg", bg = "black2" }
+"ui.menu.selected"            = { fg = "accent3", underline = { style = "line" } }
+"ui.menu.scroll"              = { fg = "accent2", bg = "black" }
+"ui.help"                     = { fg = "fg", bg = "black2" }
+"ui.popup.info"               = { fg = "fg", bg = "black2" }
+"ui.popup"                    = { bg = "black2" }
+
+# Gutter / Line numbers
+"ui.gutter"                   = { bg = "black" }
+"ui.linenr"                   = { fg = "muted", bg = "black" }
+"ui.linenr.selected"          = { fg = "accent2", bg = "black", modifiers = ["bold"] }
+
+# ===== Diagnostics（全て緑階調で統一）=====
+"diagnostic"                  = "fg"
+"diagnostic.info"             = { fg = "accent2", underline = { style = "line" } }
+"diagnostic.hint"             = { fg = "muted",   underline = { style = "line" } }
+"diagnostic.warning"          = { fg = "accent3", underline = { style = "line" } }
+"diagnostic.error"            = { fg = "emerald", underline = { style = "line" } }
+
+# バッジ/ヘッダ（ドット色）
+"info"                        = "accent2"
+"hint"                        = "muted"
+"warning"                     = "accent3"
+"error"                       = "emerald"
+"debug"                       = "emerald"
+
+# ===== (git) diff =====
+"diff.plus"                   = "accent2"
+"diff.delta"                  = "accent"
+"diff.minus"                  = "dim"            # 退色した暗緑で抑制
+
+# ===== Syntax highlight（黒×緑のみ）=====
+"type"                        = { fg = "fg" }
+"type.buildin"                = "fg"
+"comment"                     = { fg = "dim", modifiers = ["italic"] }
+"operator"                    = "fg"
+"variable"                    = { fg = "fg" }
+"variable.other.member"       = "muted"
+"constant"                    = "accent2"
+"constant.numeric"            = "accent2"
+"attributes"                  = { fg = "accent3" }
+"namespace"                   = "accent"
+"string"                      = "accent3"
+"string.special.url"          = { fg = "accent", underline = { style = "line" } }
+"constant.character.escape"   = "accent2"
+"constructor"                 = "accent2"
+"keyword"                     = { fg = "accent", modifiers = ["bold"] }
+"keyword.control"             = "accent3"
+"function"                    = "accent2"
+"label"                       = "accent"
+
+# ===== Markup =====
+"markup.heading"              = { fg = "accent2", modifiers = ["bold"], underline = { style = "line" } }
+"markup.list"                 = { fg = "accent3" }
+"markup.bold"                 = { fg = "accent2", modifiers = ["bold"] }
+"markup.italic"               = { fg = "accent",  modifiers = ["italic"] }
+"markup.link.url"             = { fg = "accent",  underline = { style = "line" } }
+"markup.link.text"            = "accent3"
+"markup.quote"                = "muted"
+"markup.raw"                  = "accent3"
+
+# ===== Palette (green & black only) =====
+[palette]
+# ベース黒と緑（背景は黒に緑味をほんの少し）
+black    = "#060a06"  # ほぼ黒
+black2   = "#0a120a"  # ポップアップ/空間用の黒寄り深緑
+base     = "#101610"  # 反転時の前景用、暗い黒緑
+
+# テキスト系
+fg       = "#55c455"  # メイン文字（落ち着いた緑）
+muted    = "#3a7a3a"  # コメント/控えめ
+dim      = "#284c28"  # さらに控えめ
+edge     = "#1f4e1f"  # 罫線/境界
+
+# アクセント（明度違いの緑だけ）
+accent   = "#63e063"  # 鮮やか緑（リンク/キーワード）
+accent2  = "#7af77a"  # 明るい緑（関数/成功/数値）
+accent3  = "#a0ffa0"  # 黄緑寄り（選択/見出し）
+
+# カーソルと選択
+cursor   = "#7af77a"  # 明るい緑
+glow     = "#b7ffb7"  # マッチ等の薄発光
+sel_bg   = "#1a301a"  # 選択背景（暗緑）
+sel_fg   = "#e8ffe8"  # 選択文字
+
+# エメラルド（エラーも緑系で）
+emerald  = "#31d18f"

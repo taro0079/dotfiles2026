@@ -1,0 +1,258 @@
+# =========================================
+#  Language Server Definitions
+# =========================================
+
+[language-server.efm]
+command = "efm-langserver"
+
+[language-server.phpactor]
+command = "phpactor"
+args = [ "language-server"]
+
+[language-server.rubocop]
+command = "bundle"
+args = ["exec", "rubocop", "--lsp"]
+
+[language-server.hx-lsp]
+command= "hx-lsp"
+args = ["--dir", "/Users/taro_morita/.config/helix/snippets"]
+
+[language-server.typos]
+command = "typos-lsp"
+environment = { "RUST_LOG" = "error" }
+
+[language-server.eslint]
+command = "vscode-eslint-language-server"
+args = ["--stdio"]
+
+[language-server.eslint.config]
+codeActionOnSave = { mode = "all", "source.fixAll.eslint" = true }
+format = { enable = true }
+nodePath = ""
+quiet = false
+rulesCustomizations = []
+run = "onType"
+validate = "on"
+experimental = {}
+problems = {shotenToSingleLine = false }
+
+[language-server.eslint.config.codeAction]
+disableRuleComment = { enable = true, location = "separateLine" }
+showDocumentation = { enable = true }
+
+[language-server.eslint.config.workingDirectory]
+mode = "location"
+
+# Helix-GPT (Copilot handler)
+[language-server.gpt]
+command = "sh"
+args = [
+    "-c",
+    "helix-gpt --handler copilot --copilotApiKey $(cat /Users/taro_morita/.config/helix/copilot_key | tr -d '[:space:]') --copilotModel gpt-4-copilot --logFile /Users/taro_morita/.config/helix/helix-gpt.log"
+]
+[language-server.php-test-generator]
+command = "php-test-generator"
+
+
+# LSP-AI (Ollama / DeepSeek Coder)
+[language-server.lsp-ai]
+command = "lsp-ai"
+
+[language-server.lsp-ai.config.memory]
+file_store = {}
+
+[language-server.lsp-ai.config.models.model1]
+type = "ollama"
+model = "deepseek-coder:latest"
+
+[language-server.lsp-ai.config.models.model2]
+type = "ollama"
+model = "llama3:latest"
+
+[language-server.lsp-ai.config.models.model3]
+type = "ollama"
+model = "qwen3:1.7b"
+
+[language-server.lsp-ai.config.models.model4]
+type = "open_ai"
+chat_endpoint = "https://api.groq.com/openai/v1/chat/completions"
+model = "llama-3.1-8b-instant"
+auth_token_env_var_name = "GROQ_API_KEY"
+
+[language-server.lsp-ai.config.models.model5]
+type = "open_ai"
+chat_endpoint = "https://api.openai.com/v1/chat/completions"
+model = "gpt-4o"
+auth_token_env_var_name = "OPENAI_API_KEY"
+
+
+[language-server.lsp-ai.config.completion]
+model = "model1"
+
+[language-server.lsp-ai.config.completion.parameters]
+max_context = 1800
+max_tokens = 32
+
+[[language-server.lsp-ai.config.completion.parameters.messages]]
+role="system"
+content="Instructions:\n- You are an AI programming assistant.\n- Given a piece of code with the cursor location marked by \"<CURSOR>\", replace \"<CURSOR>\" with the correct code or comment.\n- First, think step-by-step.\n- Describe your plan for what to build in pseudocode, written out in great detail.\n- Then output the code replacing the \"<CURSOR>\"\n- Ensure that your completion fits within the language context of the provided code snippet (e.g., Python, JavaScript, Rust).\n\nRules:\n- Only respond with code or comments.\n- Only replace \"<CURSOR>\"; do not include any previously written code.\n- Never include \"<CURSOR>\" in your response\n- If the cursor is within a comment, complete the comment meaningfully.\n- Handle ambiguous cases by providing the most contextually appropriate completion.\n- Be consistent with your responses."
+
+
+[[language-server.lsp-ai.config.completion.parameters.messages]]
+role="user"
+content = "def greet(name):\n    print(f\"Hello, {<CURSOR>}\")"
+
+[[language-server.lsp-ai.config.completion.parameters.messages]]
+role="assistant"
+content = "name"
+
+[[language-server.lsp-ai.config.completion.parameters.messages]]
+role="user"
+content = "function sum(a, b) {\n    return a + <CURSOR>;\n}"
+
+[[language-server.lsp-ai.config.completion.parameters.messages]]
+role="assistant"
+content = "b"
+[[language-server.lsp-ai.config.completion.parameters.messages]]
+role = "user"
+content = "fn multiply(a: i32, b: i32) -> i32 {\n    a * <CURSOR>\n}"
+
+[[language-server.lsp-ai.config.completion.parameters.messages]]
+role = "assistant"
+content = "b"
+
+[[language-server.lsp-ai.config.completion.parameters.messages]]
+role = "user"
+content = "# <CURSOR>\ndef add(a, b):\n    return a + b"
+
+[[language-server.lsp-ai.config.completion.parameters.messages]]
+role = "assistant"
+content = "Adds two numbers"
+
+[[language-server.lsp-ai.config.completion.parameters.messages]]
+role = "user"
+content = "# This function checks if a number is even\n<CURSOR>"
+
+[[language-server.lsp-ai.config.completion.parameters.messages]]
+role = "assistant"
+content = "def is_even(n):\n    return n % 2 == 0"
+
+[[language-server.lsp-ai.config.completion.parameters.messages]]
+role = "user"
+content = "{CODE}"
+# [language-server.lsp-ai.config.completion.parameters.options]
+# num_predict = 100
+
+# [language-server.lsp-ai.config.chat]
+# trigger = "!C"
+# action_display_name = "Chat"
+# model = "model2"
+
+# [language-server.lsp-ai.config.parameters]
+# max_context = 4096
+# max_tokens = 1024
+
+# [[language-server.lsp-ai.config.parameters.messages]]
+# role = "role"
+# content = "You are a code assistant chatbot. The user will ask you for assistance coding and you will do you bet to answer succinctly and accurately"
+
+[language-server.ruby-lsp]
+command="ruby-lsp"
+config = { diagnostic = true, formatting = true }
+
+# =========================================
+#  Language Configuration
+# =========================================
+
+[[language]]
+name = "php"
+indent = { tab-width = 4, unit = "    "}
+# lsp-ai を追加
+language-servers = [
+{name = "intelephense"},
+{name = "hx-lsp"},
+{name = "gpt"},
+{name = "typos"},
+{name = "efm"},
+{name = "phpactor", except-features = ['completion']},
+{name = "php-test-generator"}
+]
+
+# formatter = { command = "bash", args = [ "-c", "cat > /tmp/helix_php_cs_fixer && php-cs-fixer fix --config=$PWD/.php-cs-fixer.dist.php --using-cache=no --quiet /tmp/helix_php_cs_fixer && cat /tmp/helix_php_cs_fixer"]}
+# formatter = {command = "php-cs-fixer", args = ["fix", "%{buffer_name}"]}
+auto-format = false
+
+[[language]]
+name = "toml"
+language-servers = ["typos", "lsp-ai"]
+
+[[language]]
+name = "yaml"
+file-types = ["yaml", "yml"]
+indent = { tab-width = 4, unit = "    "}
+language-servers = ["yaml-language-server", "typos-lsp"]
+
+[[language]]
+name = "typescript"
+language-servers = [ "typescript-language-server", "eslint", "emmet-ls", "lsp-ai", "gpt"]
+formatter = { command = "prettier", args = [ "--parser", "typescript" ] }
+auto-format = false
+
+[[language]]
+name = "tsx"
+# lsp-ai を追加
+language-servers = [ "typescript-language-server", "eslint", "typos", "lsp-ai", "gpt"]
+formatter = { command = "prettier", args = [ "--parser", "typescript" ] }
+auto-format = true
+
+[[language]]
+name = "rust"
+# rust-analyzer と lsp-ai を有効化
+language-servers = ["rust-analyzer", "lsp-ai"]
+auto-format = true
+
+[[language]]
+name = "go"
+# lsp-ai を追加
+language-servers = [ "gopls", "hx-lsp", "typos-lsp", "gpt"]
+formatter = { command = "gofmt" }
+auto-format = true
+
+[[language]]
+name = "python"
+# lsp-ai を追加
+language-servers = ["pyright", "lsp-ai", "gpt"]
+formatter = { command = "uv", args = ["run", "ruff", "format", "--stdin-filename", "{file}"] }
+auto-format = true
+
+[[language]]
+name = "ruby"
+auto-format = true
+formatter = { command = "bundle", args = ["exec", "rubocop", "--server", "--autocorrect", "--fail-level", "error", "--stdin", "corrected.rb", "--stderr"] }
+language-servers = [ "ruby-lsp", "gpt", "typos", "hx-lsp", "rubocop", "solargraph"]
+
+[[language]]
+name = "erb"
+file-types = ["erb"]
+language-servers = ["ruby-lsp", "vscode-html-language-server"]
+formatter = { command = "erb-format", args = ["--stdin", "--print-width", "80"] }
+auto-format = true
+
+[[language]]
+name = "html"
+file-types = ["html", "tpl" ]
+auto-format = false
+# HTMLでもAI補完を使いたい場合
+language-servers = [ "vscode-html-language-server", "lsp-ai" ]
+formatter = { command = "prettier", args = ["--parser", "html"] }
+
+[[language]]
+name = "markdown"
+language-servers = ["marksman", "markdown-oxide", "mdpls", 'hx-lsp', 'typos']
+
+[language-server.mdpls]
+command = "mdpls"
+config = {markdown.preview.auto = true }
+
+
+

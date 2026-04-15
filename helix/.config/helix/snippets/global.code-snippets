@@ -1,0 +1,9 @@
+{
+	"insert Date": {
+		"prefix": "today",
+		"body": [
+			"$CURRENT_YEAR-$CURRENT_MONTH-$CURRENT_DATE"
+		],
+		"description": "日付と曜日名を挿入"
+	}
+}

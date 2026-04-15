@@ -1,0 +1,99 @@
+{
+	"this": {
+		"prefix": "th",
+		"body": [
+			"\\$this->${1:prop}"
+		],
+		"description": "this"
+	},
+	"php": {
+		"prefix": "?",
+		"body": [
+			"<?php"
+		],
+		"description": "php"
+	},
+	"function": {
+		"prefix": "fn",
+		"body": [
+			"${1|public,private|} function ${2:functionName}(${3:args}): ${4:void}",
+			"{",
+			"\t${0}",
+			"}"
+		],
+		"description": "function"
+	},
+	"static function": {
+		"prefix": "sfn",
+		"body": [
+			"${1|public,private|} static function ${2:functionName}(${3:args}): ${4:void}",
+			"{",
+			"\t${0}",
+			"}"
+		],
+		"description": "function"
+	},
+	"php doc": {
+		"prefix": "/*",
+		"body": [
+			"/**",
+			"* ${0}",
+			"*/"
+		],
+		"description": "php doc"
+	},
+	"php doc for function": {
+		"prefix": "doc_f",
+		"body": [
+			"/**",
+			"* ${1: comment}",
+			"*",
+			"* @param ${2:type} ${3:arg}",
+			"* @return ${4:type}",
+			"*/"
+		],
+		"description": "php doc for function"
+	},
+	"ternary": {
+		"prefix": "=?",
+		"body": [
+			"${1:foo} = ${2:true} ? ${3:a} : ${4:b}"
+		],
+		"description": "ternary operation"
+	},
+	"?:": {
+		"prefix": "=?",
+		"body": [
+			"${1:true} ? ${2:a} : ${3:b}"
+		],
+		"description": "?:"
+	},
+	"if": {
+		"prefix": "if",
+		"body": [
+			"if (${1}) {",
+			"\t${0:${VISUAL}}",
+			"}"
+		],
+		"description": "if statement"
+	},
+	"foreach": {
+		"prefix": "foreach",
+		"body": [
+			"foreach ($${1:variable} as $${2:value}) {",
+			"\t${0:{VISUAL}}",
+			"}"
+		],
+		"description": "foreach statement"
+	},
+	"interface": {
+		"prefix": "interface",
+		"body": [
+			"interface ${1:InterfaceName}",
+			"{",
+			"\t${0}",
+			"}"
+		],
+		"description": "interface"
+	}
+}

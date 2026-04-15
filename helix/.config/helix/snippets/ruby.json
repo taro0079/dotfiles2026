@@ -1,0 +1,109 @@
+{
+  "Class": {
+    "prefix": "class",
+    "body": [
+      "class ${1:Classname} ",
+      "\tdef initialize${2:(${3:args})}",
+      "\t\t@$3 = $3",
+      "\t\t$4",
+      "\tend",
+      "",
+      "\t$5",
+      "end"
+    ],
+    "description": "Class definition template."
+  },
+  "Def": {
+    "prefix": [
+      "def"
+    ],
+    "body": [
+      "def ${1:function_name}${2:(${3:args})}",
+      "\t $4",
+      "end",
+      "",
+      "$5"
+    ],
+    "description": "Function definition template"
+  },
+  "if": {
+    "prefix": [
+      "if"
+    ],
+    "body": [
+      "if ${1:condition}",
+      "\t $2",
+      "end"
+    ]
+  },
+  "unless": {
+    "prefix": [
+      "unless"
+    ],
+    "body": [
+      "unless ${1:condition}",
+      "\t $2",
+      "end"
+    ]
+  },
+  "map": {
+    "prefix": [
+      "map"
+    ],
+    "body": [
+      "map { |${1:variable}| $2 }$3"
+    ]
+  },
+  "Module": {
+    "prefix": [
+      "mod"
+    ],
+    "body": [
+      "module ${1:module_name}",
+      "\t $2",
+      "end",
+      "",
+      "$3"
+    ],
+    "description": "Function definition template"
+  },
+  "CRUD": {
+    "prefix": [
+      "crud"
+    ],
+    "body": [
+      "def index",
+      "\t$1",
+      "end",
+      "",
+      "def show",
+      "\t$2",
+      "end",
+      "",
+      "def create",
+      "\t$3",
+      "end",
+      "",
+      "def new",
+      "\t$4",
+      "end",
+      "",
+      "def update",
+      "\t$5",
+      "end",
+      "",
+      "def edit",
+      "\t$6",
+      "end",
+      "",
+      "def delete",
+      "\t$7",
+      "end",
+      "",
+      "def destroy",
+      "\t$8",
+      "end",
+      "$9"
+    ]
+  }
+}

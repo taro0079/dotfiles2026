@@ -1,0 +1,86 @@
+theme = "base16_transparent"
+[editor]
+line-number = "relative"
+mouse = false
+true-color = true
+color-modes = true
+auto-save = true
+cursorline = true
+idle-timeout = 10
+completion-timeout = 10
+end-of-line-diagnostics = "hint"
+
+[editor.file-picker]
+hidden = false
+git-ignore = true
+ignore = true
+
+[editor.cursor-shape]
+insert = "block"
+normal = "block"
+select = "block"
+
+[editor.lsp]
+display-messages = true
+snippets = true
+
+[editor.soft-wrap]
+enable = true
+
+# [editor.whitespace]
+# render = "all"
+
+[editor.indent-guides]
+render = false
+
+[keys.insert]
+"C-[" = "normal_mode"
+[keys.normal]
+"C-S-`" = "switch_to_uppercase"
+# C-y = [
+#   ':sh rm -f /tmp/unique-file',
+#   ':insert-output yazi %{buffer_name} --chooser-file=/tmp/unique-file',
+#   ':insert-output echo "\x1b[?1049h\x1b[?2004h" > /dev/tty',
+#   ':open %sh{cat /tmp/unique-file}',
+#   ':redraw',
+# ]
+C-y = [
+  ':sh rm -f /tmp/unique-file',
+  ':insert-output yazi %{buffer_name} --chooser-file=/tmp/unique-file',
+  ':insert-output echo "\x1b[?1049h\x1b[?2004h" > /dev/tty',
+  ':open %sh{cat /tmp/unique-file}',
+  ':redraw',
+]
+
+# C-y = [
+#   ':sh rm -rf /tmp/unique-file && tmux display-popup -E -w 80% -h 80% -E TERM=xterm-256color yazi %{buffer_name} --chooser-file=/tmp/unique-file',
+#   ':open %sh{cat /tmp/unique-file 2>/dev/null}',
+#   ':redraw'
+# ]
+
+[keys.normal."'"]
+# g = [":new", ":insert-output lazygit", ":redraw", "jump_backward", ":reload-all"]
+g = [
+  ':sh zellij run -f -- lazygit',
+  # ':sh tmux display-popup -E -w 80%% -h 80%% lazygit',
+  ':redraw',
+  'jump_backward',
+  ':reload-all'
+]
+b = ':sh git blame -L %{cursor_line},%{cursor_line} %{buffer_name}'
+p = [':sh php-cs-fixer fix %{buffer_name} --config ./.php-cs-fixer.dist.php', ':reload-all']
+t = [':sh rpst-php-unit.sh %{buffer_name}',":vsplit-new",':insert-output cat /tmp/rpst-php-unit']
+y = [':sh BUNDLE_GEMFILE=~/.local/scripts/Gemfile path_to_clipboard.rb %{buffer_name} %{selection_line_start} %{selection_line_end}']
+c = [':pipe BUNDLE_GEMFILE=~/.local/scripts/Gemfile change_case.rb']
+
+[keys.normal."'"."r"]
+t = ':sh transport_rpstv2.rb %{buffer_name}'
+# T = [":sh tmux split-window remote_phpunit_rpstv2.rb %{buffer_name}"]
+T = [":sh zellij run --  remote_phpunit_rpstv2.rb %{buffer_name}"]
+r = ":sh git commit --allow-empty -m \"$(BUNDLE_GEMFILE=~/.local/scripts/Gemfile ruby ~/.local/scripts/make_pr_title.rb $(git branch --show-current | sed 's|f/||'))\""
+[keys.normal."'"."r"."a"]
+t = [":sh zellij run -- docker compose -f ../docker-compose.yml run --rm devcontainer ./bin/phpunit %{buffer_name}"]
+T = [":sh zellij run -- docker compose -f ../docker-compose.yml run --rm devcontainer ./bin/run_test_for_all"]
+
+[editor.inline-diagnostics]
+cursor-line="error"

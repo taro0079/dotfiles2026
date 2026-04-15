@@ -31,6 +31,9 @@ define-command open-testrunner -docstring "open rpst-x test runner in web browse
     }
 }
 
+define-command rubocop -docstring "format buffer with rubocop" %{
+    execute-keys -draft '%|bundle exec rubocop --server --autocorrect --stdin "$kak_buffile" --stderr --fail-level error<ret>'
+}
 # transfer the buffer file to remote server automatically
 hook global BufWritePost .*/ghq/github.com/PRECS-Inc/rpst-v2/.* %{
     send-rpstv2
@@ -82,7 +85,7 @@ plug "tom-huntington/simple-git-gutter.kak"
 
 plug "kak-lsp/kak-lsp" noload config %{
     eval %sh{kak-lsp}
-    hook global WinSetOption filetype=(php|go) %{
+    hook global WinSetOption filetype=(php|go|ruby|typescript) %{
         lsp-enable-window
     }
 
@@ -126,3 +129,8 @@ hook global InsertCompletionHide .* %{
     unmap window insert <tab> <c-n>
     unmap window insert <s-tab> <c-p>
 }
+
+declare-user-mode window
+map global normal <c-w> ':enter-user-mode window<ret>'
+map global window  v ': zellij-terminal-horizontal kak -c %val{session}<ret>'
+map global window  s ': zellij-terminal-vertical kak -c %val{session}<ret>'
