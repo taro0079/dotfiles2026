@@ -134,3 +134,10 @@ declare-user-mode window
 map global normal <c-w> ':enter-user-mode window<ret>'
 map global window  v ': zellij-terminal-horizontal kak -c %val{session}<ret>'
 map global window  s ': zellij-terminal-vertical kak -c %val{session}<ret>'
+
+define-command -override -params 1.. terminal -docstring "Launch Alacritty terminal" %{
+    nop %sh{
+        # Alacrittyの新しいウィンドウをバックグラウンドで起動してコマンドを渡す
+        alacritty -e "$@" </dev/null >/dev/null 2>&1 &
+    }
+}
