@@ -9,6 +9,7 @@ cursorline = true
 idle-timeout = 10
 completion-timeout = 10
 end-of-line-diagnostics = "hint"
+rulers = [80]
 
 [editor.file-picker]
 hidden = false
@@ -16,9 +17,9 @@ git-ignore = true
 ignore = true
 
 [editor.cursor-shape]
-insert = "block"
+insert = "bar"
 normal = "block"
-select = "block"
+select = "underline"
 
 [editor.lsp]
 display-messages = true
@@ -31,7 +32,7 @@ enable = true
 # render = "all"
 
 [editor.indent-guides]
-render = false
+render = true
 
 [keys.insert]
 "C-[" = "normal_mode"
