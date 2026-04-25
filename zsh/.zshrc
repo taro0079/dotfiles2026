@@ -1,14 +1,15 @@
+# zmodload zsh/zprof # to measure performance
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
 
 # Path to your Oh My Zsh installation.
-export ZSH="$HOME/.oh-my-zsh"
+# export ZSH="$HOME/.oh-my-zsh"
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time Oh My Zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME=""
+# ZSH_THEME=""
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -71,13 +72,13 @@ ZSH_THEME=""
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 ## plugin
-plugins=(
-    git
-    # zsh-autosuggestions
-    # zsh-autocomplete
-)
+# plugins=(
+#     git
+#     # zsh-autosuggestions
+#     # zsh-autocomplete
+# )
 
-source $ZSH/oh-my-zsh.sh
+# source $ZSH/oh-my-zsh.sh
 
 # User configuration
 
@@ -144,8 +145,12 @@ export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 export PATH=$PATH:$(go env GOPATH)/bin
 
-eval "$(~/.local/bin/mise activate)"
-export LIBRARY_PATH=$LIBRARY_PATH:$(brew --prefix zstd)/lib/ # for rails error surpression of zstd
+# eval "$(~/.local/bin/mise activate)"
+export PATH="$HOME/.local/share/mise/shims:$PATH" # to faster
+if [[ "$(uname -s)" == "Darwin" ]]; then
+  export LIBRARY_PATH=$LIBRARY_PATH:$(brew --prefix zstd)/lib/ # for rails error surpression of zstd
+fi
+
 alias cdp='cd $HOME/ghq/$(ghq list | fzf)'
 
 fbr() {
@@ -171,18 +176,18 @@ esac
 
 
 
-ZSH_CUSTOM=$HOME/.oh-my-zsh/custom
-if [[ ! -d "$ZSH_CUSTOM/plugins/zeno" ]]; then
-  git clone https://github.com/yuki-yano/zeno.zsh.git "$ZSH_CUSTOM/plugins/zeno"
-fi
-source $HOME/.oh-my-zsh/custom/plugins/zeno/zeno.zsh
-export ZENO_HOME=~/.config/zeno
-bindkey ' ' zeno-auto-snippet
-bindkey '^m' zeno-auto-snippet-and-accept-line
-bindkey '^i' zeno-completion
-bindkey '^x^p' zeno-insert-snippet
-bindkey '^r' zeno-history-selection
-bindkey '^x^f' zeno-ghq-cd
+# ZSH_CUSTOM=$HOME/.oh-my-zsh/custom
+# if [[ ! -d "$ZSH_CUSTOM/plugins/zeno" ]]; then
+#   git clone https://github.com/yuki-yano/zeno.zsh.git "$ZSH_CUSTOM/plugins/zeno"
+# fi
+# source $HOME/.oh-my-zsh/custom/plugins/zeno/zeno.zsh
+# export ZENO_HOME=~/.config/zeno
+# bindkey ' ' zeno-auto-snippet
+# bindkey '^m' zeno-auto-snippet-and-accept-line
+# bindkey '^i' zeno-completion
+# bindkey '^x^p' zeno-insert-snippet
+# bindkey '^r' zeno-history-selection
+# bindkey '^x^f' zeno-ghq-cd
 
 
 export EDITOR="nvim"
@@ -193,6 +198,8 @@ jjn() {
     jj new $(jj bookmark list --all | fzf | awk '{print $2}')
 }
 
-eval "$(direnv hook zsh)"
+# eval "$(direnv hook zsh)"
 
 eval "$(starship init zsh)"
+
+# zprof # to measure performance

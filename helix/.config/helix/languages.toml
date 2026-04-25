@@ -171,11 +171,11 @@ indent = { tab-width = 4, unit = "    "}
 language-servers = [
 {name = "intelephense"},
 {name = "hx-lsp"},
-{name = "gpt"},
+# {name = "gpt"},
 {name = "typos"},
 {name = "efm"},
 {name = "phpactor", except-features = ['completion']},
-{name = "php-test-generator"}
+# {name = "php-test-generator"}
 ]
 
 # formatter = { command = "bash", args = [ "-c", "cat > /tmp/helix_php_cs_fixer && php-cs-fixer fix --config=$PWD/.php-cs-fixer.dist.php --using-cache=no --quiet /tmp/helix_php_cs_fixer && cat /tmp/helix_php_cs_fixer"]}

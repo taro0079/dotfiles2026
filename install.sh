@@ -12,3 +12,4 @@ git clone https://github.com/yuki-yano/zeno.zsh.git
 echo "source /path/to/dir/zeno.zsh" >> ~/.zshrc
 
 
++npm install -g @herb-tools/language-server
