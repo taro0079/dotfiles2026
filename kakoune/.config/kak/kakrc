@@ -124,6 +124,10 @@ hook global BufCreate .*\.html\.erb %{
     set-option buffer filetype erb
 }
 
+hook global BufCreate .*\.tpl %{
+    set-option buffer filetype smarty
+}
+
 plug "kak-lsp/kak-lsp" noload config %{
     eval %sh{kak-lsp}
     hook global WinSetOption filetype=(php|go|ruby|typescript) %{
@@ -138,6 +142,21 @@ plug "kak-lsp/kak-lsp" noload config %{
             root_globs = ["Gemfile", ".git"]
 
             [herb.settings]
+
+        }
+        lsp-enable-window
+    }
+
+    hook global WinSetOption filetype=smarty %{
+        set-option buffer lsp_servers %{
+            [html]
+            command = "vscode-html-language-server"
+            args = ["--stdio"]
+
+            root_globs = [".git"]
+            [html.settings.html.format]
+            enable = false
+            
 
         }
         lsp-enable-window
@@ -184,7 +203,6 @@ hook global InsertCompletionHide .* %{
     unmap window insert <s-tab> <c-p>
 }
 
-hook global BufCreate .*\.(tpl) %{ set buffer filetype html }
 declare-user-mode window
 map global normal <c-w> ':enter-user-mode window<ret>'
 map global window  v ': tmux-terminal-horizontal kak -c %val{session}<ret>'

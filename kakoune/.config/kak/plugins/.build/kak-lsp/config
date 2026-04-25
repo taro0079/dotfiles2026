@@ -18,6 +18,21 @@ try %{
         lsp-enable-window
     }
 
+    hook global WinSetOption filetype=smarty %{
+        set-option buffer lsp_servers %{
+            [html]
+            command = "vscode-html-language-server"
+            args = ["--stdio"]
+
+            root_globs = [".git"]
+            [html.settings.html.format]
+            enable = false
+            
+
+        }
+        lsp-enable-window
+    }
+
     map global user l ':enter-user-mode lsp<ret>' -docstring "LSP Mode"
     map global goto d <esc>:lsp-definition<ret> -docstring "LSP definition"
     map global goto r <esc>:lsp-references<ret> -docstring "LSP references"
