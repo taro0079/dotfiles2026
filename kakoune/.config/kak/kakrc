@@ -221,3 +221,20 @@ hook global WinSetOption filetype=erb %{
         remove-highlighter window/erb
     }
 }
+
+# for rpst smarty highlighting
+hook global WinSetOption filetype=smarty %{
+    require-module html
+
+    add-highlighter window/smarty regions
+    add-highlighter window/smarty/html default-region ref html
+    add-highlighter window/smarty/eccube region '<!--\{' '\}-->' group
+
+    add-highlighter window/smarty/eccube/ regex '\$[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*' 0:variable
+    add-highlighter window/smarty/eccube/ regex '\b(if|else|elseif|foreach|from|item|key|name|include|assign|capture)\b' 0:keyword
+    add-highlighter window/smarty/eccube/ regex '\|[a-zA-Z_]+' 0:function
+
+    hook -once -always window WinSetOption filetype=.* %{
+        remove-highlighter window/smarty
+    }
+}
