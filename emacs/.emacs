@@ -175,6 +175,7 @@
     (setq-local completion-at-point-functions
                 (list (cape-capf-super
                        #'eglot-completion-at-point
+                       #'yasnippet-capf
                        #'cape-keyword
                        #'cape-dabbrev)
                       #'cape-file)))
