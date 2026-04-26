@@ -314,5 +314,8 @@
   (meow-setup)
   (meow-global-mode 1))
 
+(use-package majutsu
+  :straight (:host github :repo "0WD0/majutsu"))
+
 (put 'upcase-region 'disabled nil)
 
