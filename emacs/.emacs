@@ -31,8 +31,7 @@
 
 
 ;; package.el is not needed — straight.el handles everything
-;; (package-initialize)
-
+(require 'package)
 
 ;; straight setting
  (defvar bootstrap-version)
@@ -171,18 +170,22 @@
   :ensure t
   :after corfu
   :bind ("C-c p" . cape-prefix-map)
+  :config
+  (defun my/eglot-capf ()
+    (setq-local completion-at-point-functions
+                (list (cape-capf-super
+                       #'eglot-completion-at-point
+                       #'cape-keyword
+                       #'cape-dabbrev)
+                      #'cape-file)))
+  (add-hook 'eglot-managed-mode-hook #'my/eglot-capf)
   :init
   (add-hook 'completion-at-point-functions #'cape-dabbrev t)
   (add-hook 'completion-at-point-functions #'cape-file t)
   (add-hook 'completion-at-point-functions #'cape-elisp-block)
-  (add-hook 'completion-at-point-functions #'yasnippet-capf)
-  (add-hook 'completion-at-point-functions #'eglot-completion-at-point))
+  (add-hook 'completion-at-point-functions #'yasnippet-capf))
+;;(add-hook 'completion-at-point-functions #'eglot-completion-at-point))
 
-;; Eldoc + Eldoc-box
-(use-package eldoc
-  :custom
-  (eldoc-idle-delay 0.5)
-  :hook (eglot-managed-mode . eldoc-mode))
 
 (use-package eldoc-box
   :straight t
