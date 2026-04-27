@@ -30,7 +30,6 @@ function M.run_phpunit_at_remote()
   local phpunit_cmd =
     string.format("php %s/vendor/bin/phpunit -c %s %s", cfg.base_path, cfg.phpunit_config, test_target_path)
   local full_cmd = string.format("ssh %s@%s '%s'", cfg.user, cfg.remote_host, phpunit_cmd)
-  print(full_cmd)
 
   -- 非同期でターミナルに表示
   vim.cmd("vsplit")

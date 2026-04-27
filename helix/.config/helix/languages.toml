@@ -174,7 +174,7 @@ language-servers = [
 # {name = "gpt"},
 {name = "typos"},
 {name = "efm"},
-{name = "phpactor", except-features = ['completion']},
+# {name = "phpactor", except-features = ['completion']},
 # {name = "php-test-generator"}
 ]
 
