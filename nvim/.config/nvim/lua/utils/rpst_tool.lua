@@ -37,6 +37,54 @@ function M.run_phpunit_at_remote()
   vim.cmd("terminal " .. full_cmd)
 end
 
+function M.get_test_namespace(file_path)
+  local dirname = vim.fn.fnamemodify(file_path, ":.:h")
+  local base_namespace = "Test\\app\\phpunit\\v9\\xunit\\"
+  local converted = string.gsub(dirname, "/", "\\")
+  return base_namespace .. converted
+end
+
+function M.get_basename(file_path)
+  return vim.fn.fnamemodify(file_path, ":t:r")
+end
+
+function M.get_test_file_path(file_path)
+  local root_dir = "tests/app/phpunit/v9/xunit"
+  local dirname = vim.fn.fnamemodify(file_path, ":.:h")
+  local basename = M.get_basename(file_path)
+  return root_dir .. "/" .. dirname .. "/" .. basename .. "Test.php"
+end
+
+function M.create_test_class(file_path)
+  local namespace = M.get_test_namespace(file_path)
+  local template = [[
+  <?php
+
+  declare(strict_type=1);
+
+  namespace %s;
+
+  use Tests\\app\\phpunit\\v9\\abstracts\\test_cases\\TestCaseForXUnit;
+
+  class %sTest extend TestCaseForXUnit
+  {}
+
+  ]]
+
+  local content = string.format(template, namespace, M.get_basename(file_path))
+  local target_path = M.get_test_file_path(file_path)
+  local target_dir = vim.fn.fnamemodify(target_path, ":h")
+  if vim.fn.isdirectory(target_dir) == 0 then
+    vim.fn.mkdir(target_dir, "p")
+  end
+  local file, error = io.open(target_path, "w")
+  if file then
+    file:write(content)
+    file:close()
+  end
+  vim.notify(error)
+end
+
 local function find_project_root(filepath)
   local dir = vim.fn.fnamemodify(filepath, ":h")
   while dir ~= "/" do
@@ -104,7 +152,7 @@ local function generate_skeleton(ns, classname, test_ns, test_classname)
 end
 
 function M.create_testclass()
-  local filepath = vim.fn.expand("%:p")
+  local filepath = vim.fn.expand("%")
 
   if not filepath:match("%.php") then
     vim.notify("PHPファイルではありません", vim.log.levels.WARN)
@@ -170,6 +218,11 @@ function M.setup(opts)
   vim.api.nvim_create_user_command("RpstTestRunner", function()
     M.run_test_runner()
   end, { desc = "RPST TestRunner をリモートで実行" })
+
+  vim.api.nvim_create_user_command("RpstTestGenerator", function()
+    local file_path = vim.fn.expand("%:p")
+    M.create_test_class(file_path)
+  end, { desc = "RPSTのテストクラスを生成します" })
 
   vim.api.nvim_create_user_command("RpstTestRunnerWeb", function()
     M.run_test_runner()

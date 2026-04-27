@@ -20,7 +20,7 @@
 (setq-default tab-width 4)
 (global-display-line-numbers-mode t)
 (global-auto-revert-mode 1)
-(let ((mono-spaced-font "Maple Mono NF")
+(let ((mono-spaced-font "CaskaydiaCove Nerd Font")
       (proportionately-spaced-font "Sans"))
   (set-face-attribute 'default nil :family mono-spaced-font :height 140)
   (set-face-attribute 'fixed-pitch nil :family mono-spaced-font :height 1.0)
@@ -28,7 +28,6 @@
 
 (setq custom-file (locate-user-emacs-file "custome.el"))
 (load custom-file :no-error-file-is-missing)
-
 
 ;; package.el is not needed — straight.el handles everything
 (require 'package)
@@ -117,11 +116,11 @@
   ("C-c g f" . consult-ghq-find)
   ("C-c g g" . consult-ghq-grep)
 )
-(use-package inkpot-theme
-  :straight t
-  :config
-  (load-theme 'inkpot)
-  )
+;; (use-package inkpot-theme
+;;   :straight t
+;;   :config
+;;   (load-theme 'inkpot)
+;;   )
 (with-eval-after-load 'eglot
   (defun my-eglot-disable-file-watching (orig-fn &rest args)
     (let ((caps (apply orig-fn args)))
@@ -164,13 +163,20 @@
   (corfu-always-indent 'complete)
   :init
   (global-corfu-mode))
-
 ;; Cape
 (use-package cape
   :ensure t
   :after corfu
   :bind ("C-c p" . cape-prefix-map)
   :config
+  (defun my/elisp-capf ()
+    (setq-local completion-at-point-functions
+                (list (cape-capf-super
+                       #'cape-elisp-symbol
+                       #'yasnippet-capf
+                       #'cape-dabbrev
+                       #'cape-file)))
+    (add-hook 'emacs-lisp-mode-hook #'my/elisp-capf)
   (defun my/eglot-capf ()
     (setq-local completion-at-point-functions
                 (list (cape-capf-super
@@ -179,15 +185,13 @@
                        #'cape-keyword
                        #'cape-dabbrev)
                       #'cape-file)))
-  (add-hook 'eglot-managed-mode-hook #'my/eglot-capf)
+  (add-hook 'eglot-managed-mode-hook #'my/eglot-capf))
   :init
   (add-hook 'completion-at-point-functions #'cape-dabbrev t)
   (add-hook 'completion-at-point-functions #'cape-file t)
-  (add-hook 'completion-at-point-functions #'cape-elisp-block)
+  (add-hook 'completion-at-point-functions #'cape-elisp-block t)
   (add-hook 'completion-at-point-functions #'yasnippet-capf))
 ;;(add-hook 'completion-at-point-functions #'eglot-completion-at-point))
-
-
 (use-package eldoc-box
   :straight t
   :config
@@ -214,9 +218,7 @@
 
 (use-package yasnippet-capf
   :ensure t
-  :after cape
-  :config
-  (add-to-list 'completion-at-point-functions #'yasnippet-capf))
+  :after cape)
 
 (use-package magit
   :straight t
@@ -224,7 +226,10 @@
   (magit-auto-revert-mode t)
   :bind
   (("C-x g" . magit-status)))
-
+(use-package puni
+  :defer t
+  
+  )
 (use-package meow
   :ensure t
   :custom
@@ -255,6 +260,9 @@
      '("f" . find-file)
      '("b" . switch-to-buffer))
     (meow-normal-define-key
+     '("M-i" . puni-mark-list-around-point)
+     '("M-a" . puni-mark-sexp-around-point)
+     '("+ +" . puni-expand-region)
      '("0" . meow-expand-0)
      '("1" . meow-expand-1)
      '("2" . meow-expand-2)
@@ -282,7 +290,9 @@
      '("E" . meow-next-symbol)
      '("f" . meow-find)
      '("g" . meow-cancel-selection)
-     '("G" . meow-grab)
+     '("g l" . move-end-of-line)
+     '("g h" . move-beginning-of-line)
+     '("g" . meow-grab)
      '("h" . meow-left)
      '("H" . meow-left-expand)
      '("i" . meow-insert)
@@ -323,3 +333,16 @@
 
 (put 'upcase-region 'disabled nil)
 
+(use-package web-mode
+  :ensure t
+  :mode ("\\.tpl\\'" . web-mode)
+  :custom
+  (web-mode-markup-indent-offset 4)
+  (web-mode-css-indent-offset 4)
+  (web-mode-code-indent-offset 4)
+  (web-mode-attr-indent-offset 4)
+  (web-mode-enable-auto-pairing t)
+  (web-mode-enable-css-colorization t)
+
+  :config
+  (add-to-list 'web-mode-engines-alist '("smarty" . "\\.tpl\\'")))

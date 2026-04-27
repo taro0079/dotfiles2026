@@ -70,9 +70,39 @@ define-command fzf-buffer -docstring 'search buffer by fzf' %{
 
     }
 }
+define-command fzf-grep -docstring 'search file by fzf' %{
+    evaluate-commands %sh{
+        dir=$(pwd)
+        cat <<EOF
+        terminal sh -c %{
+            # プレビュー: 該当行をハイライトし、その行へスクロールさせます（:200だと200行目以降の検索結果が見えないため）
+            preview='if command -v bat >/dev/null 2>&1; then bat --style=numbers --color=always --highlight-line {2} {1}; else cat {1}; fi'
+            
+            # 修正1: 検索コマンドから --color=always を削除
+            if command -v rg >/dev/null 2>&1; then
+                search_cmd="rg --line-number --no-heading --hidden '^'"
+            else
+                search_cmd="grep -rnI --exclude-dir='.git' '^' . 2>/dev/null"
+            fi
+
+            # 修正2: プレビューウィンドウが該当行(+{2}-/2)を追従するように修正
+            selected=\$(eval "\$search_cmd" | fzf --delimiter : --preview "\$preview" --preview-window=right:60%:wrap:+{2}-/2) || exit 0
+
+            [ -z "\$selected" ] && exit 0
+
+            f=\$(printf '%s\n' "\$selected" | cut -d: -f1)
+            line=\$(printf '%s\n' "\$selected" | cut -d: -f2)
+
+            # 修正3: printf の %%s を %s に修正
+            printf 'evaluate-commands -try-client %s edit %%{%s/%s} %s\n' "$kak_client" "$dir" "\$f" "\$line" | kak -p "$kak_session"
+        }
+EOF
+    }
+}
 
 map global fzf f ': fzf-file<ret>' -docstring "file"
 map global fzf b ': fzf-buffer<ret>' -docstring "buffer"
+map global fzf g ': fzf-grep<ret>' -docstring "grep"
 map global user f ':enter-user-mode fzf<ret>' -docstring "fzf..."
 
 # open yazi as a file manager
