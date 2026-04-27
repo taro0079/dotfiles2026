@@ -6,11 +6,26 @@ true-color = true
 color-modes = true
 auto-save = true
 cursorline = true
+undercurl = true
 idle-timeout = 10
 completion-timeout = 10
 end-of-line-diagnostics = "hint"
 rulers = [80]
+indent-heuristic = "tree-sitter"
 
+[editor.statusline]
+left = [
+  "mode",
+  "spacer",
+  "version-control",
+  "spacer",
+  "separator",
+  "file-name",
+  "file-modification-indicator"
+]
+mode.normal = "NORMAL"
+mode.insert = "INSERT"
+mode.select = "SELECT"
 [editor.file-picker]
 hidden = false
 git-ignore = true
@@ -52,6 +67,34 @@ C-y = [
   ':open %sh{cat /tmp/unique-file}',
   ':redraw',
 ]
+"A-k" = [
+  "extend_to_line_bounds",
+  "delete_selection",
+  "move_line_up",
+  "paste_before"
+]
+
+"A-j" = [
+  "extend_to_line_bounds",
+  "delete_selection",
+  "move_line_down",
+  "paste_before"
+]
+
+[keys.normal.space]
+"," = [
+  "save_selection",
+  "goto_line_end",
+  ":append-output printf ','" ,
+  "jump_backward"
+]
+
+";" = [
+  "save_selection",
+  "goto_line_end",
+  ":append-output printf ';'" ,
+  "jump_backward"
+]
 
 # C-y = [
 #   ':sh rm -rf /tmp/unique-file && tmux display-popup -E -w 80% -h 80% -E TERM=xterm-256color yazi %{buffer_name} --chooser-file=/tmp/unique-file',
@@ -68,7 +111,7 @@ g = [
   'jump_backward',
   ':reload-all'
 ]
-b = ':sh git blame -L %{cursor_line},%{cursor_line} %{buffer_name}'
+b = ":echo %sh{git blame -L %{cursor_line},%{cursor_line} -- %{buffer_name}}"
 p = [':sh php-cs-fixer fix %{buffer_name} --config ./.php-cs-fixer.dist.php', ':reload-all']
 t = [':sh rpst-php-unit.sh %{buffer_name}',":vsplit-new",':insert-output cat /tmp/rpst-php-unit']
 y = [':sh BUNDLE_GEMFILE=~/.local/scripts/Gemfile path_to_clipboard.rb %{buffer_name} %{selection_line_start} %{selection_line_end}']
