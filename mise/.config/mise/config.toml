@@ -12,6 +12,6 @@ idiomatic_version_file_enable_tools = ["ruby"]
 [tools]
 node = "lts"
 php = "8.3"
-ruby = "latest"
+ruby = "4.0.2"
 yarn = "1.22.15"
 

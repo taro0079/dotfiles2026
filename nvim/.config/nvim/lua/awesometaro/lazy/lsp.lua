@@ -42,6 +42,8 @@ return {
         "gopls",
         "vtsls",
         "tailwindcss",
+        "html",
+        "emmet_ls",
       },
       handlers = {
         function(server_name) -- default handler (optional)
@@ -111,9 +113,45 @@ return {
       },
     })
 
+    vim.filetype.add({
+      extension = {
+        tpl = "smarty",
+      },
+    })
+
     vim.lsp.config("smarty_ls", {
       capabilities = capabilities,
     })
+
+    vim.lsp.config("html", {
+      capabilities = capabilities,
+      filetypes = { "html", "smarty" },
+      init_options = {
+        configurationSection = { "html", "css", "javascript" },
+        embeddedLanguages = {
+          css = true,
+          javascript = true,
+        },
+        provideFormatter = true,
+      },
+    })
+
+    vim.lsp.config("emmet_ls", {
+      capabilities = capabilities,
+      filetypes = {
+        "html",
+        "css",
+        "scss",
+        "javascriptreact",
+        "typescriptreact",
+        "vue",
+        "svelte",
+        "smarty",
+      },
+    })
+
+    vim.lsp.enable("html")
+    vim.lsp.enable("emmet_ls")
 
     vim.lsp.config("test-generator", {
       cmd = { "php-test-generator" },

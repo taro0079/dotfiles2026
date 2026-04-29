@@ -156,9 +156,18 @@ content = "{CODE}"
 # role = "role"
 # content = "You are a code assistant chatbot. The user will ask you for assistance coding and you will do you bet to answer succinctly and accurately"
 
+# Ruff (Python linter/formatter LSP)
+[language-server.ruff]
+command = "ruff"
+args = ["server"]
+
 [language-server.ruby-lsp]
 command="ruby-lsp"
 config = { diagnostic = true, formatting = true }
+
+[language-server.herb]
+command = "herb-language-server"
+args = ["--stdio"]
 
 # =========================================
 #  Language Configuration
@@ -174,7 +183,7 @@ language-servers = [
 # {name = "gpt"},
 {name = "typos"},
 {name = "efm"},
-# {name = "phpactor", except-features = ['completion']},
+{name = "phpactor", except-features = ['completion']},
 # {name = "php-test-generator"}
 ]
 
@@ -194,14 +203,14 @@ language-servers = ["yaml-language-server", "typos-lsp"]
 
 [[language]]
 name = "typescript"
-language-servers = [ "typescript-language-server", "eslint", "emmet-ls", "lsp-ai", "gpt"]
+language-servers = [ "typescript-language-server", "eslint", "emmet-ls", "typos"]
 formatter = { command = "prettier", args = [ "--parser", "typescript" ] }
 auto-format = false
 
 [[language]]
 name = "tsx"
 # lsp-ai を追加
-language-servers = [ "typescript-language-server", "eslint", "typos", "lsp-ai", "gpt"]
+language-servers = [ "typescript-language-server", "eslint", "typos"]
 formatter = { command = "prettier", args = [ "--parser", "typescript" ] }
 auto-format = true
 
@@ -220,9 +229,8 @@ auto-format = true
 
 [[language]]
 name = "python"
-# lsp-ai を追加
-language-servers = ["pyright", "lsp-ai", "gpt"]
-formatter = { command = "uv", args = ["run", "ruff", "format", "--stdin-filename", "{file}"] }
+# pyright: 型チェック・補完、ruff: lint・フォーマット
+language-servers = ["pyright", "ruff", "lsp-ai", "gpt"]
 auto-format = true
 
 [[language]]
@@ -234,8 +242,8 @@ language-servers = [ "ruby-lsp", "gpt", "typos", "hx-lsp", "rubocop", "solargrap
 [[language]]
 name = "erb"
 file-types = ["erb"]
-language-servers = ["ruby-lsp", "vscode-html-language-server"]
-formatter = { command = "erb-format", args = ["--stdin", "--print-width", "80"] }
+language-servers = ["herb", "ruby-lsp", "vscode-html-language-server"]
+formatter = { command = "herb", args = ["format", "-"] }
 auto-format = true
 
 [[language]]

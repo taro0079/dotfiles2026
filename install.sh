@@ -12,4 +12,7 @@ git clone https://github.com/yuki-yano/zeno.zsh.git
 echo "source /path/to/dir/zeno.zsh" >> ~/.zshrc
 
 
-+npm install -g @herb-tools/language-server
+npm install -g @herb-tools/language-server
+
+# Nap: terminal based snippets plugin
+go install github.com/maaslalani/nap@main
