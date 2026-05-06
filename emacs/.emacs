@@ -9,7 +9,7 @@
 (global-set-key (kbd "C-c <down>") 'windmove-down)
 (global-set-key (kbd "C-c <left>") 'windmove-left)
 (global-set-key (kbd "C-c <right>") 'windmove-right)
-(load-theme 'tsdh-dark)
+;; (load-theme 'tsdh-dark)
 ;; backup file
 (setq my-backup-dir (expand-file-name "~/.emacs.d/backups/"))
 (unless (file-exists-p my-backup-dir)
@@ -84,7 +84,7 @@
   (setq skk-show-mode-show t)
   (setq skk-egg-like-newline t)
   (setq skk-jisyo-code 'utf-8)
-  (setq skk-large-jisyo "~/.config/SKK-JISYO.L")yy
+  (setq skk-large-jisyo "~/.config/SKK-JISYO.L")
   (setq skk-server-host "localhost")
   (setq skk-server-portnum 1178))
 ;; 候補を縦に並べる
@@ -249,8 +249,8 @@
   (global-diff-hl-mode)
   (add-hook 'after-save-hook 'diff-hl-update)
   (diff-hl-flydiff-mode 1)
-  (diff-hl-margin-mode 1)
-  (add-hook 'dired-mode-hook 'diff-hl-dired-mode-hook))
+  (diff-hl-margin-mode 1))
+;;  (add-hook 'dired-mode-hook 'diff-hl-dired-mode-hook))
 
 
 (use-package magit
@@ -302,3 +302,17 @@
      ("n" "Note" entry (file+headline org-default-notes-file "Notes")
       "* %?\n created_at: %U\n %i\n %a"))))
 (put 'narrow-to-region 'disabled nil)
+
+;; tokyonight
+(use-package tokyo-night
+  :ensure t
+  :config
+  (load-theme 'tokyo-night-moon t)
+  )
+
+;; catppuccin
+(use-package catppuccin-theme
+  :ensure t
+  :config
+;;   (load-theme 'catppuccin t)            
+  )
