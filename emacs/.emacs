@@ -9,6 +9,7 @@
 (global-set-key (kbd "C-c <down>") 'windmove-down)
 (global-set-key (kbd "C-c <left>") 'windmove-left)
 (global-set-key (kbd "C-c <right>") 'windmove-right)
+(load-theme 'tsdh-dark)
 ;; backup file
 (setq my-backup-dir (expand-file-name "~/.emacs.d/backups/"))
 (unless (file-exists-p my-backup-dir)
@@ -114,8 +115,8 @@
   :bind
   ("C-c g p" . consult-ghq-switch-project)
   ("C-c g f" . consult-ghq-find)
-  ("C-c g g" . consult-ghq-grep)
-)
+  ("C-c g g" . consult-ghq-grep))
+
 ;; (use-package inkpot-theme
 ;;   :straight t
 ;;   :config
@@ -230,104 +231,6 @@
   :defer t
   
   )
-(use-package meow
-  :ensure t
-  :custom
-  (meow-use-clipboard t)
-  :config
-  (defun meow-setup ()
-    (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
-    (meow-motion-overwrite-define-key
-     '("j" . meow-next)
-     '("k" . meow-prev)
-     '("<escape>" . ignore))
-    (meow-leader-define-key
-     '("1" . meow-digit-argument)
-     '("2" . meow-digit-argument)
-     '("3" . meow-digit-argument)
-     '("4" . meow-digit-argument)
-     '("5" . meow-digit-argument)
-     '("6" . meow-digit-argument)
-     '("7" . meow-digit-argument)
-     '("8" . meow-digit-argument)
-     '("9" . meow-digit-argument)
-     '("0" . meow-digit-argument)
-     '("/" . meow-keypad-describe-key)
-     '("?" . meow-cheatsheet)
-     
-     '("j" . "H-j")
-     '("k" . "H-k")
-     '("f" . find-file)
-     '("b" . switch-to-buffer))
-    (meow-normal-define-key
-     '("M-i" . puni-mark-list-around-point)
-     '("M-a" . puni-mark-sexp-around-point)
-     '("+ +" . puni-expand-region)
-     '("0" . meow-expand-0)
-     '("1" . meow-expand-1)
-     '("2" . meow-expand-2)
-     '("3" . meow-expand-3)
-     '("4" . meow-expand-4)
-     '("5" . meow-expand-5)
-     '("6" . meow-expand-6)
-     '("7" . meow-expand-7)
-     '("8" . meow-expand-8)
-     '("9" . meow-expand-9)
-     '("-" . negative-argument)
-     '(";" . meow-reverse)
-     '("," . meow-inner-of-thing)
-     '("." . meow-bounds-of-thing)
-     '("[" . meow-beginning-of-thing)
-     '("]" . meow-end-of-thing)
-     '("a" . meow-append)
-     '("A" . meow-open-below)
-     '("b" . meow-back-word)
-     '("B" . meow-back-symbol)
-     '("c" . meow-change)
-     '("d" . meow-delete)
-     '("D" . meow-backward-delete)
-     '("e" . meow-next-word)
-     '("E" . meow-next-symbol)
-     '("f" . meow-find)
-     '("g" . meow-cancel-selection)
-     '("g l" . move-end-of-line)
-     '("g h" . move-beginning-of-line)
-     '("g" . meow-grab)
-     '("h" . meow-left)
-     '("H" . meow-left-expand)
-     '("i" . meow-insert)
-     '("I" . meow-open-above)
-     '("j" . meow-next)
-     '("J" . meow-next-expand)
-     '("k" . meow-prev)
-     '("K" . meow-prev-expand)
-     '("l" . meow-right)
-     '("L" . meow-right-expand)
-     '("m" . meow-join)
-     '("n" . meow-search)
-     '("o" . meow-block)
-     '("O" . meow-to-block)
-     '("p" . meow-yank)
-     '("q" . meow-quit)
-     '("Q" . meow-goto-line)
-     '("r" . meow-replace)
-     '("R" . meow-swap-grab)
-     '("s" . meow-kill)
-     '("t" . meow-till)
-     '("u" . meow-undo)
-     '("U" . meow-undo-in-selection)
-     '("v" . meow-visit)
-     '("w" . meow-next-word)
-     '("W" . meow-next-symbol)
-     '("x" . meow-line)
-     '("X" . meow-goto-line)
-     '("y" . meow-save)
-     '("Y" . meow-sync-grab)
-     '("z" . meow-pop-selection)
-     '("'" . repeat)))
-  (meow-setup)
-  (meow-global-mode 1))
-
 (use-package majutsu
   :straight (:host github :repo "0WD0/majutsu"))
 
@@ -346,3 +249,18 @@
 
   :config
   (add-to-list 'web-mode-engines-alist '("smarty" . "\\.tpl\\'")))
+
+;; org
+(use-package org
+  :straight t
+  :bind
+  (("C-c c" . org-capture)
+   ("C-c a" . org-agenda))
+  :custom
+  (org-directory "~/notes")
+  (org-default-notes-file (expand-file-name "inbox.org" org-directory))
+  (org-capture-templates
+   '(("t" "Task" entry (file+headline org-default-notes-file "Tasks")
+      "* TODO %?\n %U\n %a")
+     ("n" "Note" entry (file+headline org-default-notes-file "Notes")
+      "* %?\n created_at: %U\n %i\n %a"))))
