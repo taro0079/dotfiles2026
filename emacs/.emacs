@@ -28,6 +28,14 @@
   (set-face-attribute 'variable-pitch nil :family proportionately-spaced-font :height 1.0))
 
 (setq custom-file (locate-user-emacs-file "custome.el"))
+;; sql
+(load (expand-file-name "~/.emacs.d/private-sql.el") t)
+(use-package sql
+  :defer t
+  :bind (:map sql-mode-map
+              ("C-c b" . sql-set-sqli-buffer)))
+
+
 (load custom-file :no-error-file-is-missing)
 
 ;; package.el is not needed — straight.el handles everything
@@ -149,11 +157,14 @@
   :config
   (add-to-list 'eglot-server-programs
                '((php-mode php-ts-mode) . ("mise" "exec" "node@20" "--" "env" "NODE_OPTIONS=--max-old-space-size=8192" "intelephense" "--stdio")))
+  (add-to-list 'eglot-server-programs
+               '(sql-mode . ("~/go/bin/sqls")))
 
   :hook
   ((python-ts-mode . eglot-ensure)
    (lua-ts-mode . eglot-ensure)
    (js-ts-mode . eglot-ensure)
+   (sql-mode . eglot-ensure)
    (typescript-ts-mode . eglot-ensure)
    (php-mode . eglot-ensure)
    (php-ts-mode . eglot-ensure)
@@ -229,6 +240,19 @@
   :ensure t
   :after cape)
 
+(use-package diff-hl
+  :ensure t
+  :init
+  (setq diff-hl-draw-borders nil)
+  
+  :config
+  (global-diff-hl-mode)
+  (add-hook 'after-save-hook 'diff-hl-update)
+  (diff-hl-flydiff-mode 1)
+  (diff-hl-margin-mode 1)
+  (add-hook 'dired-mode-hook 'diff-hl-dired-mode-hook))
+
+
 (use-package magit
   :straight t
   :custom
@@ -237,6 +261,10 @@
   (("C-x g" . magit-status)))
 (use-package puni
   :defer t
+  :bind (("C-=" . puni-expand-region)
+         ("C--" . puni-contract-region)
+         )
+
   
   )
 (use-package majutsu
@@ -273,3 +301,4 @@
       "* TODO %?\n %U\n %a")
      ("n" "Note" entry (file+headline org-default-notes-file "Notes")
       "* %?\n created_at: %U\n %i\n %a"))))
+(put 'narrow-to-region 'disabled nil)
