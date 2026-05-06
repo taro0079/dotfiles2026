@@ -101,7 +101,7 @@
   ;; よく使う標準コマンドを Consult の便利なコマンドに置き換える
   :bind (("C-x b" . consult-buffer)         ;; バッファ切り替え（最近使ったファイルなども含む）
          ("C-x 4 b" . consult-buffer-other-window)
-         ("C-s" . consult-line)             ;; 現在のバッファ内を検索（プレビュー付き）
+         ("C-c l" . consult-line)             ;; 現在のバッファ内を検索（プレビュー付き）
          ("M-y" . consult-yank-pop)         ;; クリップボード（kill-ring）の履歴から貼り付け
          ("M-g g" . consult-goto-line)      ;; 行指定ジャンプ
          ("M-g i" . consult-imenu)          ;; 関数や見出しへのジャンプ
@@ -110,6 +110,14 @@
   :config
   ;; Consultのプレビューを遅延させる（動作を軽くするため）
   (setq consult-preview-key 'any))
+
+;; どこにでもジャンプできるやつ
+(use-package avy
+  :straight t
+  :bind (("C-:" . avy-goto-char)
+         ("C-'" . avy-goto-char2)
+         ("M-g w" . avy-goto-word1)
+         ("M-g l" . avy-goto-line)))
 (use-package consult-ghq
   :straight t
   :bind
@@ -255,7 +263,8 @@
   :straight t
   :bind
   (("C-c c" . org-capture)
-   ("C-c a" . org-agenda))
+   ("C-c a" . org-agenda)
+   ("C-c i" . (lambda () (interactive) (find-file "~/notes/inbox.org"))))
   :custom
   (org-directory "~/notes")
   (org-default-notes-file (expand-file-name "inbox.org" org-directory))
