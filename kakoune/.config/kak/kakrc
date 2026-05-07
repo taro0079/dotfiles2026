@@ -60,10 +60,10 @@ define-command fzf-buffer -docstring 'search buffer by fzf' %{
     evaluate-commands %sh{
         cat <<EOF
         	terminal sh -c %{
-            		preview='if command -v bat >/dev/null 2>&1; then bat --style=numbers --color=always --line-range=:200 {}; else cat {}; fi'
-            		f=\$(printf '%s\n' "$kak_quoted_buflist" | xargs -n 1 | fzf --preview "\$preview" ) || exit 0
-            		[ -z "\$f"] && exit 0
-            		printf 'evaluate-commands -try-client %s edit %%{%s/%s}\n' "$kak_client" "$dir" "\$f" | kak -p "$kak_session"
+        	        preview='if command -v bat >/dev/null 2>&1; then bat --style=numbers --color=always --line-range=:200 {}; else cat {}; fi'
+        		f=\$(printf '%s\n' $kak_quoted_buflist | fzf --preview "\$preview") || exit 0;
+        		[ -z "\$f"] && exit 0
+        		printf "evaluate-commands -try-client '$kak_client' buffer '%s'" "\$f" | kak -p "$kak_session"
         	}
         EOF
 

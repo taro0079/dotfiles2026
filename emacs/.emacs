@@ -317,9 +317,15 @@
 ;;   (load-theme 'catppuccin t)            
   )
 
+;; mode line (status line)
 (use-package moody
   :ensure t
   :config
   (moody-replace-mode-line-front-space)
   (moody-replace-mode-line-buffer-identification)
   (moody-replace-vc-mode))
+
+(use-package flyspell
+  :hook
+  (php-ts-mode . flyspell-mode)
+  (ruby-ts-mode . flyspell-mode))
