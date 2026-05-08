@@ -10,7 +10,7 @@ run = "docker compose run --rm devcontainer mysql -u app_user -p -h database"
 idiomatic_version_file_enable_tools = ["ruby"]
 
 [tools]
-node = "lts"
+node = "24.14.1"
 php = "8.3"
 ruby = "4.0.2"
 yarn = "1.22.15"

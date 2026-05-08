@@ -1,6 +1,10 @@
 try %{ 
 
-    eval %sh{ kak-tree-sitter -d -s $kak_session -c $kak_client}
+    hook global WinSetOption filetype=(php) %{
+        tree-sitter-enable
+        
+    }
+
  } catch %{
     echo -debug "Error while evaluating 'kak-tree-sitter' configuration: %val{error}"
 

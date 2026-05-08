@@ -1,6 +1,7 @@
 local wezterm = require("wezterm")
 -- local mac = wezterm.target_triple:find("darwin")
 -- local linux = wezterm.target_triple:find("linux")
+--
 local config = wezterm.config_builder()
 config.automatically_reload_config = true
 config.font_size = 14
@@ -15,6 +16,15 @@ config.font = wezterm.font_with_fallback({
     "0xProto Nerd Font",
 	"Terminess Nerd Font",
 })
+
+config.background = {
+    {
+        source = {
+            File = '/Users/taro_morita/.config/wezterm/aochan.png'
+        },
+        opacity = 0.1
+    }
+}
 
 config.window_frame = {
 	inactive_titlebar_bg = "none",
