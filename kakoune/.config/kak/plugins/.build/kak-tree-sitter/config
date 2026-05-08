@@ -1,10 +1,10 @@
 try %{ 
 
-    colorscheme tokyonight
+    eval %sh{ kak-tree-sitter -d -s $kak_session -c $kak_client}
  } catch %{
-    echo -debug "Error while evaluating 'tokyonight.kak' configuration: %val{error}"
+    echo -debug "Error while evaluating 'kak-tree-sitter' configuration: %val{error}"
 
-    set-option -add current plug_conf_errors "Error while evaluating 'tokyonight.kak' configuration:"
+    set-option -add current plug_conf_errors "Error while evaluating 'kak-tree-sitter' configuration:"
     set-option -add current plug_conf_errors %sh{ printf "\n    " }
     set-option -add current plug_conf_errors %val{error}
     set-option -add current plug_conf_errors %sh{ printf "\n\n" }

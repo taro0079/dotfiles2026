@@ -1,7 +1,33 @@
+# indent setting
+set-option global tabstop 4
+set-option global indentwidth 4
+
+# change to space when input tab
+hook global InsertChar \t %{
+    exec -draft -itersel h@
+}
+
+# insert ; to end of line
+# define-command add-semicolon-to-end %{;
+#     execute-keys -draft 'gla;<esc>'
+# };
+
+# insert , to end of line
+define-command add-comma-to-end %{;
+    execute-keys -draft 'gla,<esc>'
+};
+
+map global user ';' ': add-semicolon-to-end<ret>'
+map global user ',' ': add-comma-to-end<ret>'
+
 # format the current buffer file by php-cs-fixer 
 define-command php-cs-fix %{
     nop %sh{ php-cs-fixer fix "$kak_buffile" --quiet}
     edit!
+}
+
+hook global WinSetOption filetype=(php|ruby) %{
+    eval %sh{ kak-tree-sitter -d -s $kak_session -c $kak_client }
 }
 
 # transfer source code of rpst-v2 to remote server
@@ -105,22 +131,25 @@ map global fzf b ': fzf-buffer<ret>' -docstring "buffer"
 map global fzf g ': fzf-grep<ret>' -docstring "grep"
 map global user f ':enter-user-mode fzf<ret>' -docstring "fzf..."
 
-# open yazi as a file manager
-define-command yazi -docstring 'open yazi in current buffer dir' %{
+define-command yazi -docstring 'open yazi' %{
     evaluate-commands %sh{
         tmp=$(mktemp)
+        # バッファがファイルと紐付いていない場合はカレントディレクトリをフォールバックに使う
         dir=$(dirname "$kak_buffile")
+        [ -z "$dir" ] && dir=$PWD
+
+        # ここで $kak_client と $kak_session を展開して、確実にターミナルへ渡す
         cat <<EOF
-terminal sh -c %{
-    yazi "$dir" --chooser-file="$tmp"
-    if [ -s "$tmp" ]; then
-        while IFS= read -r f || [ -n "\$f" ]; do
-            [ -z "\$f" ] && continue
-            printf 'evaluate-commands -try-client %s edit %%{%s}\n' "$kak_client" "\$f"
-        done < "$tmp" | kak -p "$kak_session"
-    fi
-    rm -f "$tmp"
-}
+        terminal sh -c %{
+            yazi "$dir" --chooser-file="$tmp"
+            if [ -s "$tmp" ]; then
+                while IFS= read -r f || [ -n "\$f" ]; do
+                    [ -z "\$f" ] && continue
+                    printf "evaluate-commands -try-client '%s' edit %%{%s}\n" "$kak_client" "\$f"
+                done < "$tmp" | kak -p "$kak_session"
+            fi
+            rm -f "$tmp"
+        }
 EOF
     }
 }
@@ -133,20 +162,13 @@ plug 'alexherbo2/auto-pairs.kak' config %{
 
 plug 'andreyorst/smarttab.kak'
 plug 'occivink/kakoune-find'
-plug "andreyorst/base16-gruvbox.kak" theme config %{
-    # colorscheme base16-gruvbox-dark-medium
-}
 plug "taro0079/tokyonight.kak" theme config %{
-    # colorscheme tokyonight
+    colorscheme tokyonight
 }
 plug 'jordan-yee/kakoune-git-mode' config %{
     declare-git-mode
     map global user g ': enter-user-mode git<ret>' -docstring "git mode"
 }
-
-# plug "andreyorst/fzf.kak" config %{
-    # map -docstring 'fzf mode' global normal '<c-p>' ': fzf-mode<ret>'
-# }
 
 plug "tom-huntington/simple-git-gutter.kak"
 
@@ -159,48 +181,14 @@ hook global BufCreate .*\.tpl %{
 }
 
 plug "kak-lsp/kak-lsp" noload config %{
-    eval %sh{kak-lsp}
-    hook global WinSetOption filetype=(php|go|ruby|typescript) %{
-        lsp-enable-window
-    }
-
-    hook global WinSetOption filetype=erb %{
-        set-option buffer lsp_servers %{
-            [herb]
-            command = "herb-language-server"
-            args = ["--stdio"]
-            root_globs = ["Gemfile", ".git"]
-
-            [herb.settings]
-
-        }
-        lsp-enable-window
-    }
-
-    hook global WinSetOption filetype=smarty %{
-        set-option buffer lsp_servers %{
-            [html]
-            command = "vscode-html-language-server"
-            args = ["--stdio"]
-
-            root_globs = [".git"]
-            [html.settings.html.format]
-            enable = false
-            
-
-        }
-        lsp-enable-window
-    }
-
+    # 共通のキーマッピング（これらは起動時に読み込まれても非常に軽量です）
     map global user l ':enter-user-mode lsp<ret>' -docstring "LSP Mode"
     map global goto d <esc>:lsp-definition<ret> -docstring "LSP definition"
     map global goto r <esc>:lsp-references<ret> -docstring "LSP references"
     map global goto i <esc>:lsp-implementation<ret> -docstring "LSP implementation"
     map global goto y <esc>:lsp-type-definition<ret> -docstring "LSP type definition"
-
     map global user a <esc>:lsp-code-actions<ret> -docstring 'LSP code actions'
     map global user R <esc>:lsp-rename-prompt<ret> -docstring 'LSP rename'
-
     map global insert <tab> '<a-;>:try lsp-snippets-select-next-placeholders catch %{ execute-keys -with-hooks <lt>tab> }<ret>'
 
     map global object a '<a-semicolon>lsp-object<ret>' -docstring 'LSP any symbol'
@@ -209,8 +197,45 @@ plug "kak-lsp/kak-lsp" noload config %{
     map global object t '<a-semicolon>lsp-object Class Interface Module Namespace Struct<ret>' -docstring 'LSP class or module'
     map global object d '<a-semicolon>lsp-diagnostic-object error warning<ret>' -docstring 'LSP error and warnings'
     map global object D '<a-semicolon>lsp-diagnostic-object error<ret>' -docstring 'LSP error'
-
 }
+
+# 複雑なバックスラッシュ連結を避け、個別にhookを定義する（動作がより安定します）
+hook global WinSetOption filetype=(php|go|ruby|typescript) %{
+    lsp-enable-window
+}
+
+hook global WinSetOption filetype=erb %{
+    set-option buffer lsp_servers %{
+        [herb]
+        command = "herb-language-server"
+        args = ["--stdio"]
+        root_globs = ["Gemfile", ".git"]
+    }
+    lsp-enable-window
+}
+
+hook global WinSetOption filetype=smarty %{
+    set-option buffer lsp_servers %{
+        [html]
+        command = "vscode-html-language-server"
+        args = ["--stdio"]
+        root_globs = [".git"]
+        [html.settings.html.format]
+        enable = false
+    }
+    lsp-enable-window
+}
+
+# LSPサーバー自体の起動を「実際にファイルを開いた時」まで遅延させる
+hook global WinSetOption filetype=(php|go|ruby|typescript|erb|smarty) %{
+    evaluate-commands %sh{
+        # lsp_diagnostic_line_error_face が未定義（＝まだ kak-lsp が初期化されていない）場合のみ実行
+        if [ -z "$kak_opt_lsp_diagnostic_line_error_face" ]; then
+            echo "eval %sh{kak-lsp}"
+        fi
+    }
+}
+
 
 map global normal '#' :comment-line<ret>
 map global user y '<a-|>pbcopy<ret>' -docstring "yank to clipboard"
@@ -218,6 +243,7 @@ add-highlighter global/ number-lines -relative -hlcursor
 add-highlighter global/ show-matching
 add-highlighter global/ dynregex '%reg{/}' 0:+bu
 add-highlighter global/ column 80 default,rgb:303030
+declare-option -hidden str lsp_modeline ""
 set-option global modelinefmt '%val{bufname} %val{cursor_line}:%val{cursor_char_column} {{context_info}} {{mode_info}} - %val{client}@[%val{session}]'
 set-option global modelinefmt "%opt{lsp_modeline} %opt{modelinefmt}"
 
