@@ -26,16 +26,12 @@ define-command php-cs-fix %{
     edit!
 }
 
-hook global WinSetOption filetype=.* %{
-    evaluate-commands %sh{
-        kak-tree-sitter -dks --init $kak_session
-    }
-}
-
-hook global WinSetOption filetype=(php) %sh{
-
-    tree-sitter-enable
-}
+# kak-tree-sitter: デーモンを起動し、--init で必要なフック / face / オプションを注入する。
+# 公式ドキュメント記載のとおり colorscheme を読み込む前に実行する必要がある
+# (face 定義が colorscheme に上書きされないため)。
+# -d: daemon mode, -k: ログを *debug* バッファへ, -s: server を起動,
+# --init <session>: そのセッションへフック等を注入。
+eval %sh{ kak-tree-sitter -dks --init $kak_session }
 
 # transfer source code of rpst-v2 to remote server
 define-command send-rpstv2 %{
@@ -170,7 +166,7 @@ plug 'alexherbo2/auto-pairs.kak' config %{
 plug 'andreyorst/smarttab.kak'
 plug 'occivink/kakoune-find'
 plug "taro0079/tokyonight.kak" theme config %{
-    # colorscheme tokyonight
+    colorscheme tokyonight
 }
 plug 'jordan-yee/kakoune-git-mode' config %{
     declare-git-mode

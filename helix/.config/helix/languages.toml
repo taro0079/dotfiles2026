@@ -169,6 +169,9 @@ config = { diagnostic = true, formatting = true }
 command = "herb-language-server"
 args = ["--stdio"]
 
+[language-server.sqls]
+command = "sqls"
+
 # =========================================
 #  Language Configuration
 # =========================================
@@ -253,6 +256,10 @@ auto-format = false
 # HTMLでもAI補完を使いたい場合
 language-servers = [ "vscode-html-language-server", "lsp-ai" ]
 formatter = { command = "prettier", args = ["--parser", "html"] }
+
+[[language]]
+name = "sql"
+language-servers = ["sqls"]
 
 [[language]]
 name = "markdown"

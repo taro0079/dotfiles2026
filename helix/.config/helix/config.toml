@@ -1,4 +1,4 @@
-theme = "gruvbox"
+theme = "tokyonight-transparent"
 [editor]
 line-number = "relative"
 mouse = true
@@ -126,6 +126,11 @@ c = [':pipe BUNDLE_GEMFILE=~/.local/scripts/Gemfile change_case.rb']
 r = [":write", ":reload"]
 
 [keys.normal."'"."r"]
+R = [
+  ":sh rpst-test-utils generate test %{buffer_name}",
+  ":open %sh{rpst-test-utils generate test %{buffer_name} --dry-run}",
+  ":reload-all"
+]
 t = ':sh transport_rpstv2.rb %{buffer_name}'
 # T = [":sh tmux split-window remote_phpunit_rpstv2.rb %{buffer_name}"]
 T = [":sh zellij run --  remote_phpunit_rpstv2.rb %{buffer_name}"]

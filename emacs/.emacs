@@ -119,6 +119,10 @@
   ;; Consultのプレビューを遅延させる（動作を軽くするため）
   (setq consult-preview-key 'any))
 
+;; terminal emulator
+(use-package vterm
+  :ensure t
+  :bind ("C-c C-v" . vterm))
 ;; どこにでもジャンプできるやつ
 (use-package avy
   :straight t
