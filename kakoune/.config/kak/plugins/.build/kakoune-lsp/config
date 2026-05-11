@@ -1,10 +1,10 @@
 try %{ 
 
-    # kak-lsp はバイナリ自身が必要な kakoune コマンド/フックを出力する。
-    # `eval %sh{kak-lsp}` をトップレベルで実行しないと filetype フック
-    # （BufSetOption filetype=php など）がファイルを開く前に登録されず、
-    # lsp_servers がセットされないため lsp-enable-window しても何も起きない。
-    eval %sh{kak-lsp}
+    # kak-lsp の起動コマンド出力 (~3000行) は本来 `eval %sh{kak-lsp}` で
+    # 毎回バイナリを起動して取得していたが、出力はセッション非依存のため
+    # ~/.config/kak/cache/kak-lsp.kak にキャッシュして source する。
+    # バイナリ更新時は ~/.config/kak/refresh-cache.sh を実行すること。
+    source "%val{config}/cache/kak-lsp.kak"
 
     map global user l ':enter-user-mode lsp<ret>' -docstring "LSP Mode"
     map global goto d <esc>:lsp-definition<ret> -docstring "LSP definition"

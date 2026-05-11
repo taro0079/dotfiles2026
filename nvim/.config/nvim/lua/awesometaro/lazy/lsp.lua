@@ -44,6 +44,7 @@ return {
         "tailwindcss",
         "html",
         "emmet_ls",
+        "sqls",
       },
       handlers = {
         function(server_name) -- default handler (optional)
@@ -92,6 +93,69 @@ return {
               },
             },
           })
+        end,
+        ["sqls"] = function()
+          local lspconfig = require("lspconfig")
+          lspconfig.sqls.setup({
+            capabilities = capabilities,
+            filetypes = { "sql", "mysql" },
+            -- Connections are loaded from ~/.config/sqls/config.yml
+          })
+
+          local function parse_lines(result)
+            if type(result) ~= "string" then
+              return {}
+            end
+            local lines = {}
+            for line in result:gmatch("[^\r\n]+") do
+              table.insert(lines, line)
+            end
+            return lines
+          end
+
+          vim.api.nvim_create_user_command("SqlsSwitchDatabase", function()
+            vim.lsp.buf_request(
+              0,
+              "workspace/executeCommand",
+              { command = "showDatabases", arguments = {} },
+              function(err, result)
+                if err then
+                  return vim.notify(vim.inspect(err), vim.log.levels.ERROR)
+                end
+                vim.ui.select(parse_lines(result), { prompt = "Database> " }, function(choice)
+                  if not choice then
+                    return
+                  end
+                  vim.lsp.buf.execute_command({ command = "switchDatabase", arguments = { choice } })
+                end)
+              end
+            )
+          end, {})
+
+          vim.api.nvim_create_user_command("SqlsSwitchConnection", function()
+            vim.lsp.buf_request(
+              0,
+              "workspace/executeCommand",
+              { command = "showConnections", arguments = {} },
+              function(err, result)
+                if err then
+                  return vim.notify(vim.inspect(err), vim.log.levels.ERROR)
+                end
+                vim.ui.select(parse_lines(result), { prompt = "Connection> " }, function(choice)
+                  if not choice then
+                    return
+                  end
+                  local idx = choice:match("^(%d+)")
+                  if idx then
+                    vim.lsp.buf.execute_command({
+                      command = "switchConnections",
+                      arguments = { tonumber(idx) },
+                    })
+                  end
+                end)
+              end
+            )
+          end, {})
         end,
         ["tailwindcss"] = function()
           vim.lsp.config("tailwindcss", {

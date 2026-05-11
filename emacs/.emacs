@@ -167,6 +167,8 @@
   :hook
   ((python-ts-mode . eglot-ensure)
    (lua-ts-mode . eglot-ensure)
+   (go-ts-mode . eglot-ensure)
+   (go-mode . eglot-ensure)
    (js-ts-mode . eglot-ensure)
    (sql-mode . eglot-ensure)
    (typescript-ts-mode . eglot-ensure)
@@ -333,3 +335,39 @@
   :hook
   (php-ts-mode . flyspell-mode)
   (ruby-ts-mode . flyspell-mode))
+
+;; fzf
+;; (use-package fzf-native
+;;   :straight (:host github :repo "dangduc/fzf-native" :files (:defaults "*.c" "*.h" "*.txt"))
+;;   :init
+;;   (setq fzf-native-always-compile-module t)
+;;   :config
+;;   (fzf-native-load-dyn))
+
+;; (use-package fzf-async
+;;   :straight (fzf-async :type git :host github :repo "jojojames/fzf-async")
+;;   :config
+;;   (fzf-async-setup))
+
+(defun my/rpst-gen-test ()
+  "現在のファイルの相対パスを引数にテストを生成し、作成されたファイルを展開する"
+  (interactive)
+  (let* ((pr (project-current t))
+         (root (project-root pr))
+         (filename (buffer-file-name))
+         ;; 1. プロジェクトルートからの相対パスを取得
+         (rel-path (file-relative-name filename root))
+         ;; 2. 実行するスクリプト名
+         (script-name "rpst-test-utils")
+         ;; 3. 実行ディレクトリをプロジェクトルートに固定
+         (default-directory root))
+    (if filename
+        (let* ((cmd (concat script-name " generate test " (shell-quote-argument rel-path)))
+               (raw-output (shell-command-to-string cmd))
+               (output (string-trim raw-output)))
+          ;; 4. 出力から "create パス" を探してファイルを開く
+          (if (string-match "create\\s-+\\(.+\\)$" output)
+              (let ((created-path (match-string 1 output)))
+                (find-file (expand-file-name created-path root)))
+            (message "Test generation failed or unexpected output: %s" output)))
+      (message "Current buffer is not visiting a file."))))

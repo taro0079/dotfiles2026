@@ -26,12 +26,13 @@ define-command php-cs-fix %{
     edit!
 }
 
-# kak-tree-sitter: デーモンを起動し、--init で必要なフック / face / オプションを注入する。
-# 公式ドキュメント記載のとおり colorscheme を読み込む前に実行する必要がある
-# (face 定義が colorscheme に上書きされないため)。
-# -d: daemon mode, -k: ログを *debug* バッファへ, -s: server を起動,
-# --init <session>: そのセッションへフック等を注入。
-eval %sh{ kak-tree-sitter -dks --init $kak_session }
+# kak-tree-sitter:
+# 公式の `eval %sh{ kak-tree-sitter -dks --init $kak_session }` は毎起動 ~150-300ms
+# かかる(プロセス起動 + デーモンとのハンドシェイク)。出力はセッション非依存なので
+# ~/.config/kak/cache/kak-tree-sitter.kak にキャッシュしておき、デーモン起動だけ
+# バックグラウンドで投げる。バイナリ更新時は ~/.config/kak/refresh-cache.sh を実行。
+source "%val{config}/cache/kak-tree-sitter.kak"
+nop %sh{ kak-tree-sitter -ds >/dev/null 2>&1 & }
 
 # transfer source code of rpst-v2 to remote server
 define-command send-rpstv2 %{
@@ -157,24 +158,34 @@ EOF
     }
 }
 map global user e ': yazi<ret>' -docstring 'open yazi'
-source "%val{config}/plugins/plug.kak/rc/plug.kak"
-plug 'andreyorst/plug.kak' noload
-plug 'alexherbo2/auto-pairs.kak' config %{
-    enable-auto-pairs
+# ---- Plugins (direct source, plug.kak only loaded on-demand) ----
+# plug.kak の起動時スキャンを避けるため、使うプラグインを直接 source する。
+# install/update したいときだけ :plug-init で plug.kak をロード。
+define-command plug-init -docstring 'Load plug.kak on demand for install/update commands' %{
+    source "%val{config}/plugins/plug.kak/rc/plug.kak"
 }
 
-plug 'andreyorst/smarttab.kak'
-plug 'occivink/kakoune-find'
-plug "taro0079/tokyonight.kak" theme config %{
-    colorscheme tokyonight
-}
-plug 'jordan-yee/kakoune-git-mode' config %{
-    declare-git-mode
-    map global user g ': enter-user-mode git<ret>' -docstring "git mode"
-}
+# auto-pairs
+source "%val{config}/plugins/auto-pairs.kak/rc/auto-pairs.kak"
+enable-auto-pairs
 
+# smarttab
+source "%val{config}/plugins/smarttab.kak/rc/smarttab.kak"
 
-plug "tom-huntington/simple-git-gutter.kak"
+# kakoune-find
+source "%val{config}/plugins/kakoune-find/find.kak"
+
+# colorscheme (tokyonight)
+source "%val{config}/plugins/tokyonight.kak/colors/tokyonight.kak"
+colorscheme tokyonight
+
+# git mode
+source "%val{config}/plugins/kakoune-git-mode/git-mode.kak"
+declare-git-mode
+map global user g ': enter-user-mode git<ret>' -docstring "git mode"
+
+# git gutter
+source "%val{config}/plugins/simple-git-gutter.kak/git_gutter.kak"
 
 hook global BufCreate .*\.html\.erb %{
     set-option buffer filetype erb
@@ -184,33 +195,32 @@ hook global BufCreate .*\.tpl %{
     set-option buffer filetype smarty
 }
 
-plug "kakoune-lsp/kakoune-lsp" noload config %{
-    # kak-lsp はバイナリ自身が必要な kakoune コマンド/フックを出力する。
-    # `eval %sh{kak-lsp}` をトップレベルで実行しないと filetype フック
-    # （BufSetOption filetype=php など）がファイルを開く前に登録されず、
-    # lsp_servers がセットされないため lsp-enable-window しても何も起きない。
-    eval %sh{kak-lsp}
+# kakoune-lsp: セッション非依存出力を cache から読み込む。
+# バイナリ更新時は ~/.config/kak/refresh-cache.sh を実行すること。
+source "%val{config}/cache/kak-lsp.kak"
 
-    map global user l ':enter-user-mode lsp<ret>' -docstring "LSP Mode"
-    map global goto d <esc>:lsp-definition<ret> -docstring "LSP definition"
-    map global goto r <esc>:lsp-references<ret> -docstring "LSP references"
-    map global goto i <esc>:lsp-implementation<ret> -docstring "LSP implementation"
-    map global goto y <esc>:lsp-type-definition<ret> -docstring "LSP type definition"
-    map global user a <esc>:lsp-code-actions<ret> -docstring 'LSP code actions'
-    map global user R <esc>:lsp-rename-prompt<ret> -docstring 'LSP rename'
-    map global insert <tab> '<a-;>:try lsp-snippets-select-next-placeholders catch %{ execute-keys -with-hooks <lt>tab> }<ret>'
 
-    map global object a '<a-semicolon>lsp-object<ret>' -docstring 'LSP any symbol'
-    map global object <a-a> '<a-semicolon>lsp-object<ret>' -docstring 'LSP any symbol'
-    map global object f '<a-semicolon>lsp-object Function Method<ret>' -docstring 'LSP function or method'
-    map global object t '<a-semicolon>lsp-object Class Interface Module Namespace Struct<ret>' -docstring 'LSP class or module'
-    map global object d '<a-semicolon>lsp-diagnostic-object error warning<ret>' -docstring 'LSP error and warnings'
-    map global object D '<a-semicolon>lsp-diagnostic-object error<ret>' -docstring 'LSP error'
-}
+map global user l ':enter-user-mode lsp<ret>' -docstring "LSP Mode"
+map global goto d <esc>:lsp-definition<ret> -docstring "LSP definition"
+map global goto r <esc>:lsp-references<ret> -docstring "LSP references"
+map global goto i <esc>:lsp-implementation<ret> -docstring "LSP implementation"
+map global goto y <esc>:lsp-type-definition<ret> -docstring "LSP type definition"
+map global user a <esc>:lsp-code-actions<ret> -docstring 'LSP code actions'
+map global user R <esc>:lsp-rename-prompt<ret> -docstring 'LSP rename'
+map global insert <tab> '<a-;>:try lsp-snippets-select-next-placeholders catch %{ execute-keys -with-hooks <lt>tab> }<ret>'
 
-hook global WinSetOption filetype=(php|go|ruby|typescript|erb|smarty) %{
+map global object a '<a-semicolon>lsp-object<ret>' -docstring 'LSP any symbol'
+map global object <a-a> '<a-semicolon>lsp-object<ret>' -docstring 'LSP any symbol'
+map global object f '<a-semicolon>lsp-object Function Method<ret>' -docstring 'LSP function or method'
+map global object t '<a-semicolon>lsp-object Class Interface Module Namespace Struct<ret>' -docstring 'LSP class or module'
+map global object d '<a-semicolon>lsp-diagnostic-object error warning<ret>' -docstring 'LSP error and warnings'
+map global object D '<a-semicolon>lsp-diagnostic-object error<ret>' -docstring 'LSP error'
+
+hook global WinSetOption filetype=(php|go|ruby|typescript|erb|smarty|sql) %{
     lsp-enable-window
 }
+
+source "%val{config}/sqls.kak"
 
 # erb / smarty は kak-lsp 標準の filetype フックがないので自前で lsp_servers を設定。
 # kak-lsp 標準のフックは BufSetOption だが、これらは WinSetOption でも問題なく機能する。
