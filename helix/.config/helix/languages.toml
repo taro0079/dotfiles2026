@@ -4,6 +4,7 @@
 
 [language-server.efm]
 command = "efm-langserver"
+args = ["-c", "/Users/taro_morita/.config/efm-langserver/config.yaml", "-logfile", "/tmp/efm.log", "-loglevel", "5"]
 
 [language-server.phpactor]
 command = "phpactor"
@@ -192,6 +193,7 @@ language-servers = [
 
 # formatter = { command = "bash", args = [ "-c", "cat > /tmp/helix_php_cs_fixer && php-cs-fixer fix --config=$PWD/.php-cs-fixer.dist.php --using-cache=no --quiet /tmp/helix_php_cs_fixer && cat /tmp/helix_php_cs_fixer"]}
 # formatter = {command = "php-cs-fixer", args = ["fix", "%{buffer_name}"]}
+formatter = { command = "/Users/taro_morita/.config/helix/scripts/php-cs-fixer-stdio", args = ["%{buffer_name}"] }
 auto-format = false
 
 [[language]]
