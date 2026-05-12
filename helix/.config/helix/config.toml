@@ -126,6 +126,10 @@ c = [':pipe BUNDLE_GEMFILE=~/.local/scripts/Gemfile change_case.rb']
 [keys.normal.space."m"]
 r = [":write", ":reload"]
 
+[keys.normal.space."d"]
+r = ":sh zellij run --direction right -- v2db; zellij action focus-previous-pane;"
+s = ":pipe-to sh -c 'TEXT=$(cat); zellij action focus-next-pane; zellij action write-chars \"$TEXT\"; zellij action write 13; zellij action focus-previous-pane'"
+
 [keys.normal."'"."r"]
 R = [
   ":sh rpst-test-utils generate test %{buffer_name}",
@@ -142,3 +146,4 @@ T = [":sh zellij run -- docker compose -f ../docker-compose.yml run --rm devcont
 
 [editor.inline-diagnostics]
 cursor-line="error"
+

@@ -9,6 +9,7 @@ if not vim.g.vscode then
   require("toggle_term")
   require("my_tree_sitter")
   require("utils.my_phptools")
+  require("utils.quickrun_php").setup()
   require("utils.rpst_tool").setup()
   require("config.autocmds")
   -- require("kurodake-green")
