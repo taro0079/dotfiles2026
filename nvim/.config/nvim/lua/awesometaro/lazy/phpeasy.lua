@@ -21,6 +21,6 @@ return {
     { "__", "<CMD>PHPEasyAppendConstruct<CR>", ft = "php" },
     { "_i", "<CMD>PHPEasyAppendInvoke<CR>", ft = "php" },
     { "-a", "<CMD>PHPEasyAppendArgument<CR>", ft = "php" },
-    { "p", "<CMD>PHPEasyPaste<CR>", ft = "php", mode = { "n", "v" } },
+    { "-P", "<CMD>PHPEasyPaste<CR>", ft = "php", mode = { "n", "v" } },
   },
 }

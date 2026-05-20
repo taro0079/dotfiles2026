@@ -8,20 +8,34 @@ return {
     "olimorris/neotest-phpunit",
   },
   config = function()
-    local neotest = require("neotest")
-    neotest.setup({
+    -- local neotest = require("neotest")
+    -- neotest.setup({
+    --   adapters = {
+    --     -- require("neotest-phpunit"),
+    --     require("neotest-phpunit")({
+    --       phpunit_cmd = function()
+    --         local root = vim.fn.getcwd()
+    --         return {
+    --           root .. "/vendor/bin/phpunit",
+    --           "--configuration",
+    --           root .. "/tests/app/phpunit/v9/phpunit.xml.dist",
+    --         }
+    --       end,
+    --       --   filter_dirs = { ".git", "node_modules", "vendor", "storage", "bootstrap" },
+    --     }),
+    --   },
+    -- })
+    require("neotest").setup({
       adapters = {
-        -- require("neotest-phpunit"),
         require("neotest-phpunit")({
           phpunit_cmd = function()
-            local root = vim.fn.getcwd()
-            return {
-              root .. "/vendor/bin/phpunit",
-              "--configuration",
-              root .. "/tests/app/phpunit/v9/phpunit.xml.dist",
-            }
+            local cwd = vim.fn.getcwd()
+            if string.find(cwd, "rpst%-api") then
+              return "rpstapi-unittest.sh"
+            elseif string.find(cwd, "rpst%-v2") then
+              return "rpst-remote-phpunit.sh"
+            end
           end,
-          --   filter_dirs = { ".git", "node_modules", "vendor", "storage", "bootstrap" },
         }),
       },
     })

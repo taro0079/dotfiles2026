@@ -3,7 +3,7 @@ version: 2
 #     - composer.json
 tools:
     phpmd: &phpmd
-        lint-command: 'phpmd "${INPUT}" text .phpmd/phpmd.xml'
+        lint-command: 'vendor/binphpmd "${INPUT}" text .phpmd/phpmd.xml'
         lint-stdin: false
         lint-after-save: true
         lint-ignore-exit-code: true

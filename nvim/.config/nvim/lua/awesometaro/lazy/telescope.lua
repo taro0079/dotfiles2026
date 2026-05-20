@@ -22,6 +22,7 @@ return {
       builtin.find_files({ hidden = true, no_ignore = true })
     end, { desc = "Find File Via Telescope" })
     vim.keymap.set("n", "<leader>pp", builtin.git_files, { desc = "Find Git File Via Telescope" })
+        vim.keymap.set("n", "<leader>gs", builtin.git_status, { desc = "Telescope: Git Status" })
     vim.keymap.set("n", "<leader>pb", builtin.buffers, { desc = "Pick Buffer Via Telescope" })
     vim.keymap.set("n", "<leader>pm", builtin.marks, { desc = "Pick marks via telescope " })
     vim.keymap.set("n", "<leader>pq", builtin.live_grep, { desc = "Pick live grep  via telescope " })

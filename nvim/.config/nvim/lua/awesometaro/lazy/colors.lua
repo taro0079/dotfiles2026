@@ -99,7 +99,7 @@ return {
         },
       })
 
-      ColorMyPencils("rose-pine-moon")
+      ColorMyPencils("tokyonight-moon")
     end,
   },
 }

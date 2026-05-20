@@ -75,14 +75,17 @@ declare-user-mode fzf
 define-command fzf-file -docstring 'search file by fzf' %{
     evaluate-commands %sh{
         dir=$(pwd)
+        query_opt=""
+        if [ "${#kak_selection}" -ge 2 ]; then
+            query_opt="--query=\"$kak_selection\""
+        fi
         cat <<EOF
         	terminal sh -c %{
             		preview='if command -v bat >/dev/null 2>&1; then bat --style=numbers --color=always --line-range=:200 {}; else cat {}; fi'
-            		f=\$(cd "$dir" && (fd --type f 2>dev/null || find . -type f) | fzf --preview "\$preview" --preview-window=right:60%:wrap) || exit 0
-            		[ -z "\$f"] && exit 0
+            		f=\$(cd "$dir" && (fd --type f 2>dev/null || find . -type f) | fzf $query_opt --preview "\$preview" --preview-window=right:60%:wrap) || exit 0
+            		[ -z "\$f" ] && exit 0
             		printf 'evaluate-commands -try-client %s edit %%{%s/%s}\n' "$kak_client" "$dir" "\$f" | kak -p "$kak_session"
         	}
-
     }
 }
 
@@ -100,9 +103,13 @@ define-command fzf-buffer -docstring 'search buffer by fzf' %{
 
     }
 }
-define-command fzf-grep -docstring 'search file by fzf' %{
+define-command fzf-grep -docstring 'grep by fzf' %{
     evaluate-commands %sh{
         dir=$(pwd)
+        query_opt=""
+        if [ "${#kak_selection}" -ge 2 ]; then
+            query_opt="--query=\"$kak_selection\""
+        fi
         cat <<EOF
         terminal sh -c %{
             # プレビュー: 該当行をハイライトし、その行へスクロールさせます（:200だと200行目以降の検索結果が見えないため）
@@ -116,7 +123,7 @@ define-command fzf-grep -docstring 'search file by fzf' %{
             fi
 
             # 修正2: プレビューウィンドウが該当行(+{2}-/2)を追従するように修正
-            selected=\$(eval "\$search_cmd" | fzf --delimiter : --preview "\$preview" --preview-window=right:60%:wrap:+{2}-/2) || exit 0
+            selected=\$(eval "\$search_cmd" | fzf $query_opt --delimiter : --preview "\$preview" --preview-window=right:60%:wrap:+{2}-/2) || exit 0
 
             [ -z "\$selected" ] && exit 0
 
@@ -176,8 +183,8 @@ source "%val{config}/plugins/smarttab.kak/rc/smarttab.kak"
 source "%val{config}/plugins/kakoune-find/find.kak"
 
 # colorscheme (tokyonight)
-source "%val{config}/plugins/tokyonight.kak/colors/tokyonight.kak"
-colorscheme tokyonight
+# source "%val{config}/plugins/tokyonight.kak/colors/tokyonight.kak"
+# colorscheme tokyonight
 
 # git mode
 source "%val{config}/plugins/kakoune-git-mode/git-mode.kak"
@@ -247,7 +254,7 @@ hook global BufSetOption filetype=smarty %{
 
 map global normal '#' :comment-line<ret>
 map global user y '<a-|>pbcopy<ret>' -docstring "yank to clipboard"
-add-highlighter global/ number-lines -relative -hlcursor
+add-highlighter global/ number-lines -hlcursor
 add-highlighter global/ show-matching
 add-highlighter global/ dynregex '%reg{/}' 0:+bu
 add-highlighter global/ column 80 default,rgb:303030
@@ -302,3 +309,14 @@ hook global WinSetOption filetype=smarty %{
         remove-highlighter window/smarty
     }
 }
+
+evaluate-commands %sh{ hop-kak --init}
+declare-option str hop_kak_keyset 'abcdefghijklmnopqrstuvwxyz'
+map global normal <a-%> ':execute-keys gtGbx<ret>'
+define-command hop-kak %{
+    map global normal e ':eval -no-hooks -- %sh{hop-kak --keyset "$kak_opt_hop_kak_keyset " --sels "$kak_selections_desc" }<ret>'
+}
+define-command -override hop-kak-words %{
+    exec 'gtGbxs\w+<ret>:eval -no-hooks -- %sh{hop-kak --keyset "$kak_opt_hop_kak_keyset " --sels "$kak_selections_desc" }<ret>'
+}
+map global user h :hop-kak-words<ret>
