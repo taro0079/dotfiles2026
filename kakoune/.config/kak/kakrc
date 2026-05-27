@@ -86,6 +86,7 @@ define-command fzf-file -docstring 'search file by fzf' %{
             		[ -z "\$f" ] && exit 0
             		printf 'evaluate-commands -try-client %s edit %%{%s/%s}\n' "$kak_client" "$dir" "\$f" | kak -p "$kak_session"
         	}
+EOF
     }
 }
 
@@ -137,9 +138,45 @@ EOF
     }
 }
 
+define-command fzf-git-files -docstring "grep git ls-files by fzf" %{
+    evaluate-commands %sh{
+        cat <<EOF
+        terminal sh -c %{
+    		preview='if command -v bat >/dev/null 2>&1; then bat --style=numbers --color=always --line-range=:200 {}; else cat {}; fi'
+            selected=\$(git ls-files | fzf --preview "\$preview")
+            if [ -n "\$selected" ]; then
+                echo "evaluate-commands -try-client $kak_client edit %{\$selected}" | kak -p $kak_session   
+            fi
+
+        }
+    }
+}
+
+define-command fzf-git-changes -docstring "grep git changed file by fzf" %{
+    evaluate-commands %sh{
+        cat <<EOF
+        terminal sh -c %{
+            preview='if command -v bat >/dev/null 2>&1; then bat --style=numbers --color=always {2} ; else cat {2}; fi'
+            selected=\$(git status -s -uall | grep -v '/\$' | grep -E -v '^(D|.D)' | while IFS= read -r line; do
+                filepath=\$(echo "\$line" | cut -c4-)
+                if [ ! -d "\$filepath" ]; then
+                    echo "\$line"
+                fi
+            done | fzf --preview "\$preview" | cut -c4-)
+
+            if [ -n "\$selected" ]; then
+                echo "evaluate-commands -try-client $kak_client edit %{\$selected}" | kak -p $kak_session
+            fi
+        }
+EOF
+    }
+}
+
 map global fzf f ': fzf-file<ret>' -docstring "file"
 map global fzf b ': fzf-buffer<ret>' -docstring "buffer"
 map global fzf g ': fzf-grep<ret>' -docstring "grep"
+map global fzf p ': fzf-git-files<ret>' -docstring "git files"
+map global fzf c ': fzf-git-changes<ret>' -docstring "git changes"
 map global user f ':enter-user-mode fzf<ret>' -docstring "fzf..."
 
 define-command yazi -docstring 'open yazi' %{
@@ -206,6 +243,7 @@ hook global BufCreate .*\.tpl %{
 # バイナリ更新時は ~/.config/kak/refresh-cache.sh を実行すること。
 source "%val{config}/cache/kak-lsp.kak"
 
+set-option global lsp_snippet_support false
 
 map global user l ':enter-user-mode lsp<ret>' -docstring "LSP Mode"
 map global goto d <esc>:lsp-definition<ret> -docstring "LSP definition"
