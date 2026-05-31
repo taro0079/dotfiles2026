@@ -60,14 +60,21 @@ render = true
 #   ':open %sh{cat /tmp/unique-file}',
 #   ':redraw',
 # ]
+# C-y = [
+#   ':sh rm -f /tmp/unique-file',
+#   ':insert-output yazi %{buffer_name} --chooser-file=/tmp/unique-file',
+#   ':open %sh{cat /tmp/unique-file}',
+#   ':redraw',
+#   ':reload-all',
+#   ':set mouse false',
+#   ':set mouse true'
+# ]
 C-y = [
-  ':sh rm -f /tmp/unique-file',
-  ':insert-output yazi %{buffer_name} --chooser-file=/tmp/unique-file',
-  ':open %sh{cat /tmp/unique-file}',
-  ':redraw',
-  ':reload-all',
-  ':set mouse false',
-  ':set mouse true'
+  ":sh rm -f /tmp/yazi-selection",
+  ":insert-output yazi %{buffer_name} --chooser-file=/tmp/yazi-selection",
+  ":sh printf \"\\x1b[?1049h\\x1b[?2004h\" > /dev/tty",
+  ":open %sh{cat /tmp/yazi-selection}",
+  ":redraw",
 ]
 "A-k" = [
   "extend_to_line_bounds",
