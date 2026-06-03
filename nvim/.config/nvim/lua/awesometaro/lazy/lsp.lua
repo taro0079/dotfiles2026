@@ -222,8 +222,16 @@ return {
       filetypes = { "php" },
       capabilities = capabilities,
     })
+    vim.lsp.config("efm", {
+      cmd = { "efm-langserver" },
+      filetypes = { "php" },
+      capabilities = capabilities,
+      init_options = { documentFormatting = true },
+      root_markers = { "composer.json", ".git" },
+    })
     vim.lsp.enable("smarty_ls")
     vim.lsp.enable("test-generator")
+    vim.lsp.enable("efm")
 
     local cmp_select = { behavior = cmp.SelectBehavior.Select }
 

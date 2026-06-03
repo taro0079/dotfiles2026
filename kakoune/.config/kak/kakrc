@@ -7,32 +7,14 @@ hook global InsertChar \t %{
     exec -draft -itersel h@
 }
 
-# insert ; to end of line
-# define-command add-semicolon-to-end %{;
-#     execute-keys -draft 'gla;<esc>'
-# };
-
-# insert , to end of line
-define-command add-comma-to-end %{;
-    execute-keys -draft 'gla,<esc>'
-};
-
-map global user ';' ': add-semicolon-to-end<ret>'
-map global user ',' ': add-comma-to-end<ret>'
-
 # format the current buffer file by php-cs-fixer 
 define-command php-cs-fix %{
     nop %sh{ php-cs-fixer fix "$kak_buffile" --quiet}
     edit!
 }
 
-# kak-tree-sitter:
-# 公式の `eval %sh{ kak-tree-sitter -dks --init $kak_session }` は毎起動 ~150-300ms
-# かかる(プロセス起動 + デーモンとのハンドシェイク)。出力はセッション非依存なので
-# ~/.config/kak/cache/kak-tree-sitter.kak にキャッシュしておき、デーモン起動だけ
-# バックグラウンドで投げる。バイナリ更新時は ~/.config/kak/refresh-cache.sh を実行。
-source "%val{config}/cache/kak-tree-sitter.kak"
-nop %sh{ kak-tree-sitter -ds >/dev/null 2>&1 & }
+# kak-tree-sitter
+# eval %sh{ kak-tree-sitter -dks --init $kak_session }
 
 # transfer source code of rpst-v2 to remote server
 define-command send-rpstv2 %{
@@ -46,6 +28,12 @@ define-command v2test %{
     #nop %sh{
         #zellij run -- remote_phpunit_rpstv2.rb "$kak_bufname"
     #}
+}
+
+define-command csfix %{
+    nop %sh{
+        php-cs-fixer fix "$kak_bufname"
+    }
 }
 
 define-command pathcopy %{
@@ -99,9 +87,7 @@ define-command fzf-buffer -docstring 'search buffer by fzf' %{
         		[ -z "\$f"] && exit 0
         		printf "evaluate-commands -try-client '$kak_client' buffer '%s'" "\$f" | kak -p "$kak_session"
         	}
-        EOF
-
-
+EOF
     }
 }
 define-command fzf-grep -docstring 'grep by fzf' %{
@@ -179,6 +165,11 @@ map global fzf p ': fzf-git-files<ret>' -docstring "git files"
 map global fzf c ': fzf-git-changes<ret>' -docstring "git changes"
 map global user f ':enter-user-mode fzf<ret>' -docstring "fzf..."
 
+# rpst mode
+declare-user-mode rpst
+map global rpst t ': v2test ' -docstring 'remote v2 test<ret>'
+map global user r ':enter-user-mode rpst<ret>' -docstring "rpst..."
+
 define-command yazi -docstring 'open yazi' %{
     evaluate-commands %sh{
         tmp=$(mktemp)
@@ -207,7 +198,11 @@ map global user e ': yazi<ret>' -docstring 'open yazi'
 # install/update したいときだけ :plug-init で plug.kak をロード。
 define-command plug-init -docstring 'Load plug.kak on demand for install/update commands' %{
     source "%val{config}/plugins/plug.kak/rc/plug.kak"
+    plug "occivink/kakoune-snippets"
 }
+#source "%val{config}/plugins/plug.kak/rc/plug.kak"
+#plug "andreyorst/plug.kak" noload
+#plug "occivink/kakoune-snippets"
 
 # auto-pairs
 source "%val{config}/plugins/auto-pairs.kak/rc/auto-pairs.kak"
@@ -218,6 +213,9 @@ source "%val{config}/plugins/smarttab.kak/rc/smarttab.kak"
 
 # kakoune-find
 source "%val{config}/plugins/kakoune-find/find.kak"
+
+# kakoune-snippets
+source "%val{config}/plugins/kakoune-snippets/snippets.kak"
 
 # colorscheme (tokyonight)
 # source "%val{config}/plugins/tokyonight.kak/colors/tokyonight.kak"
@@ -239,9 +237,8 @@ hook global BufCreate .*\.tpl %{
     set-option buffer filetype smarty
 }
 
-# kakoune-lsp: セッション非依存出力を cache から読み込む。
-# バイナリ更新時は ~/.config/kak/refresh-cache.sh を実行すること。
-source "%val{config}/cache/kak-lsp.kak"
+# kakoune-lsp: 起動時に毎回バイナリから設定を取り込む。
+eval %sh{kak-lsp}
 
 set-option global lsp_snippet_support false
 
@@ -266,6 +263,20 @@ hook global WinSetOption filetype=(php|go|ruby|typescript|erb|smarty|sql) %{
 }
 
 source "%val{config}/sqls.kak"
+
+# efm-langserver: phpstan / mago などの外部ツールを LSP 経由で利用する。
+# kak-lsp 標準の php フック(intelephense)に追記する形で上書き。
+hook global BufSetOption filetype=php %{
+    set-option buffer lsp_servers %{
+        [intelephense]
+        root_globs = ["composer.json"]
+        args = ["--stdio"]
+
+        [efm-langserver]
+        command = "efm-langserver"
+        root_globs = ["composer.json"]
+    }
+}
 
 # erb / smarty は kak-lsp 標準の filetype フックがないので自前で lsp_servers を設定。
 # kak-lsp 標準のフックは BufSetOption だが、これらは WinSetOption でも問題なく機能する。
@@ -314,8 +325,8 @@ hook global InsertCompletionHide .* %{
 
 declare-user-mode window
 map global normal <c-w> ':enter-user-mode window<ret>'
-map global window  v ': tmux-terminal-horizontal kak -c %val{session}<ret>'
 map global window  s ': tmux-terminal-vertical kak -c %val{session}<ret>'
+map global window  v ': tmux-terminal-horizontal kak -c %val{session}<ret>'
 
 # for erb highlighting
 hook global WinSetOption filetype=erb %{
@@ -358,3 +369,19 @@ define-command -override hop-kak-words %{
     exec 'gtGbxs\w+<ret>:eval -no-hooks -- %sh{hop-kak --keyset "$kak_opt_hop_kak_keyset " --sels "$kak_selections_desc" }<ret>'
 }
 map global user h :hop-kak-words<ret>
+map global user j ': terminal jjui<ret>' -docstring 'jjui'
+
+# snippets settings
+hook global WinSetOption filetype=php %{
+    set-option -add buffer snippets 'if' '@if' %{ snippets-insert %{if (${condition}) {$n    ${}$n}}}
+    set-option -add buffer snippets 'foreach' '@fe' %{ snippets-insert %{foreach (${collection} as ${item}) {$n    ${}$n}}}
+    set-option -add buffer snippets 'usecase' '@uc' %{ snippets-insert %{<?php$nnamespace ${namespace};$n$nclass ${usecaseName}UseCase$n{$n    public static function factory(${vars})$n    {$n        return new static();$n    }$n$n    private function __construct(${vars})$n    {$n    }$n$n    public function execute(): self$n    {$n    }$n}}}
+    set-option -add buffer snippets 'function' '@fn' %{ snippets-insert %{public function ${functionName}()$n{$n    return "return";$n}}}
+    set-option -add buffer snippets 'property' '@prop' %{ snippets-insert %{private ${type} $$${name};}}
+    set-option -add buffer snippets 'doc-comment' '@d' %{ snippets-insert %{/**$n * ${comment}$n */}}
+
+}
+
+define-command my-file-picker %{
+    prompt -shell-script-candidates 'fd --type file' open: %{ edit -existing %val{text} }
+}
