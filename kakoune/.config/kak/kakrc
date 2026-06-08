@@ -382,6 +382,14 @@ hook global WinSetOption filetype=php %{
 
 }
 
+# fd files picker
 define-command my-file-picker %{
-    prompt -shell-script-candidates 'fd --type file' open: %{ edit -existing %val{text} }
+    prompt -shell-script-candidates 'fd --type file --hidden' open: %{ edit -existing %val{text} }
 }
+
+# git files picker
+define-command my-git-files-picker %{
+    prompt -shell-script-candidates 'git ls-files' open: %{ edit -existing %val{text} }
+}
+
+set-option global grepcmd 'rg --column --smart-case --hidden --sort path'

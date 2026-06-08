@@ -9,9 +9,6 @@ alias E='open /Applications/Emacs.app'
 alias fssh='fuzzy-ssh-selector.sh'
 . "$HOME/.cargo/env"
 
-# bun completions
-[ -s "/Users/taro_morita/.bun/_bun" ] && source "/Users/taro_morita/.bun/_bun"
-
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
@@ -59,9 +56,13 @@ fpath=(
   ~/.zsh/completion
   /opt/homebrew/share/zsh-completions
   /opt/homebrew/share/zsh/site-functions
+  /opt/homebrew/share/zsh/functions
   $fpath
 )
 autoload -Uz compinit && compinit -i
+
+# bun completions (must be after compinit because it uses compdef)
+[ -s "/Users/taro_morita/.bun/_bun" ] && source "/Users/taro_morita/.bun/_bun"
 
 bindkey -e
 
