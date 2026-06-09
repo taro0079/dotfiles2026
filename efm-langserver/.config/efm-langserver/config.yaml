@@ -10,7 +10,8 @@ tools:
         lint-formats:
             - '%f:%l%\t%m'
     php-phpstan: &php-phpstan
-        lint-command: 'phpstan analyse --error-format raw --no-progress  -c phpstan.dist.neon'
+        # lint-command: 'phpstan analyse --error-format raw --no-progress  -c phpstan.dist.neon'
+        lint-command: 'phpstan analyse --error-format raw --no-progress'
     # rpst-api: phpstan を devcontainer 内で実行する。
     # ホスト絶対パス ${INPUT} をリポジトリルートからの相対パスに変換して渡す。
     # phpstan は相対パスで出力するので efm がリポジトリルート基準で解決できる。
@@ -18,14 +19,7 @@ tools:
     # `run --rm` を `exec` に変えると高速化できる。
     php-phpstan-docker: &php-phpstan-docker
         lint-command: >-
-            bash -c '
-            root="$(git rev-parse --show-toplevel)";
-            rel="${INPUT#${root}/}";
-            cd "${root}" &&
-            docker compose run --rm -T -w /srv devcontainer
-            phpstan analyse --error-format=raw --no-progress --no-interaction
-            -c app/phpstan.dist.neon "${rel}"
-            '
+            bash -c ' root="$(git rev-parse --show-toplevel)"; rel="${INPUT#${root}/}"; cd "${root}" && docker compose run --rm -T -w /srv devcontainer phpstan analyse --error-format=raw --no-progress --no-interaction -c app/phpstan.dist.neon "${rel}" '
         lint-stdin: false
         lint-after-save: true
         lint-ignore-exit-code: true
@@ -35,16 +29,12 @@ tools:
             - app/phpstan.dist.neon
             - composer.json
     # rpst-api: php-cs-fixer をフォーマッタとして devcontainer 内で実行。
+    php-cs-fixer: &php-cs-fixer
+        format-command: 'php-cs-fixer fix --using-cache=no --quiet ${INPUT} && cat ${INPUT}'
+        format-stdin: false
     php-cs-fixer-docker: &php-cs-fixer-docker
         format-command: >-
-            bash -c '
-            root="$(git rev-parse --show-toplevel)";
-            rel="${INPUT#${root}/}";
-            cd "${root}" &&
-            docker compose run --rm -T -w /srv devcontainer
-            php-cs-fixer fix --using-cache=no --quiet "${rel}"
-            && cat "${INPUT}"
-            '
+            bash -c ' root="$(git rev-parse --show-toplevel)"; rel="${INPUT#${root}/}"; cd "${root}" && docker compose run --rm -T -w /srv devcontainer php-cs-fixer fix --using-cache=no --quiet "${rel}" && cat "${INPUT}" '
         format-stdin: false
     php-mago-analyze: &php-mago-analyse
         lint-command: 'mago analyze --reporting-format emacs --stdin-input ${INPUT}'
@@ -58,6 +48,7 @@ tools:
             - '%f:%l:%c:%m'
 languages:
     php:
-        - <<: *php-cs-fixer-docker
-        # - <<: *php-mago-analyse
-        # - <<: *php-mago-lint
+        - !!merge <<: *php-cs-fixer
+        - !!merge <<: *php-phpstan
+    # - <<: *php-mago-analyse
+    # - <<: *php-mago-lint

@@ -182,12 +182,13 @@ name = "php"
 indent = { tab-width = 4, unit = "    "}
 # lsp-ai を追加
 language-servers = [
-{name = "intelephense"},
+# {name = "intelephense"},
 {name = "hx-lsp"},
 # {name = "gpt"},
 {name = "typos"},
 {name = "efm"},
-{name = "phpactor", except-features = ['completion']},
+# {name = "phpactor", except-features = ['completion']},
+{name = "phpactor"},
 # {name = "php-test-generator"}
 ]
 

@@ -207,9 +207,12 @@ define-command plug-init -docstring 'Load plug.kak on demand for install/update 
 
 # jump.kak
 source "%val{config}/plugins/jump.kak/jump.kak"
-map global normal <ret> ': jumpJump <ret>'
-map global normal <a-ret> ': jumpJump -add <ret>'
-map global normal <s-ret> ': jumpJump -extend <ret>'
+
+declare-user-mode jumpJump
+map global user h ':enter-user-mode jumpJump<ret>' -docstring "jumpJump..."
+map global jumpJump <ret> ': jumpJump <ret>'
+map global jumpJump <a-ret> ': jumpJump -add <ret>'
+map global jumpJump <s-ret> ': jumpJump -extend <ret>'
 # auto-pairs
 source "%val{config}/plugins/auto-pairs.kak/rc/auto-pairs.kak"
 enable-auto-pairs
@@ -278,9 +281,9 @@ hook global BufSetOption filetype=php %{
         root_globs = ["composer.json"]
         args = ["--stdio"]
 
-        [efm-langserver]
-        command = "efm-langserver"
-        root_globs = ["composer.json"]
+        # [efm-langserver]
+        # command = "efm-langserver"
+        # root_globs = ["composer.json"]
     }
 }
 
@@ -365,16 +368,16 @@ hook global WinSetOption filetype=smarty %{
     }
 }
 
-evaluate-commands %sh{ hop-kak --init}
-declare-option str hop_kak_keyset 'abcdefghijklmnopqrstuvwxyz'
-map global normal <a-%> ':execute-keys gtGbx<ret>'
-define-command hop-kak %{
-    map global normal e ':eval -no-hooks -- %sh{hop-kak --keyset "$kak_opt_hop_kak_keyset " --sels "$kak_selections_desc" }<ret>'
-}
-define-command -override hop-kak-words %{
-    exec 'gtGbxs\w+<ret>:eval -no-hooks -- %sh{hop-kak --keyset "$kak_opt_hop_kak_keyset " --sels "$kak_selections_desc" }<ret>'
-}
-map global user h :hop-kak-words<ret>
+# evaluate-commands %sh{ hop-kak --init}
+# declare-option str hop_kak_keyset 'abcdefghijklmnopqrstuvwxyz'
+# map global normal <a-%> ':execute-keys gtGbx<ret>'
+# define-command hop-kak %{
+    # map global normal e ':eval -no-hooks -- %sh{hop-kak --keyset "$kak_opt_hop_kak_keyset " --sels "$kak_selections_desc" }<ret>'
+# }
+# define-command -override hop-kak-words %{
+    # exec 'gtGbxs\w+<ret>:eval -no-hooks -- %sh{hop-kak --keyset "$kak_opt_hop_kak_keyset " --sels "$kak_selections_desc" }<ret>'
+# }
+# map global user h :hop-kak-words<ret>
 map global user j ': terminal jjui<ret>' -docstring 'jjui'
 
 # snippets settings
