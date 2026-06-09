@@ -199,11 +199,17 @@ map global user e ': yazi<ret>' -docstring 'open yazi'
 define-command plug-init -docstring 'Load plug.kak on demand for install/update commands' %{
     source "%val{config}/plugins/plug.kak/rc/plug.kak"
     plug "occivink/kakoune-snippets"
+    plug "postsolar/jump.kak"
 }
 #source "%val{config}/plugins/plug.kak/rc/plug.kak"
 #plug "andreyorst/plug.kak" noload
 #plug "occivink/kakoune-snippets"
 
+# jump.kak
+source "%val{config}/plugins/jump.kak/jump.kak"
+map global normal <ret> ': jumpJump <ret>'
+map global normal <a-ret> ': jumpJump -add <ret>'
+map global normal <s-ret> ': jumpJump -extend <ret>'
 # auto-pairs
 source "%val{config}/plugins/auto-pairs.kak/rc/auto-pairs.kak"
 enable-auto-pairs
@@ -392,4 +398,15 @@ define-command my-git-files-picker %{
     prompt -shell-script-candidates 'git ls-files' open: %{ edit -existing %val{text} }
 }
 
+# git files picker
+define-command my-git-diff-picker %{
+    prompt -shell-script-candidates 'git diff --name-only --relative' open: %{ edit -existing %val{text} }
+}
+
 set-option global grepcmd 'rg --column --smart-case --hidden --sort path'
+# My pickers
+declare-user-mode my-picker
+map global user p ':enter-user-mode my-picker<ret>' -docstring "my picker..."
+map global my-picker g ': my-file-picker<ret>' -docstring "fd"
+map global my-picker s ': my-git-diff-picker<ret>' -docstring "git changes"
+map global my-picker p ': my-git-files-picker<ret>' -docstring "git ls-files"

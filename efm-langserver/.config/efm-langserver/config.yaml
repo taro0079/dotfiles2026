@@ -58,7 +58,6 @@ tools:
             - '%f:%l:%c:%m'
 languages:
     php:
-        - <<: *php-phpstan-docker
         - <<: *php-cs-fixer-docker
         # - <<: *php-mago-analyse
         # - <<: *php-mago-lint
