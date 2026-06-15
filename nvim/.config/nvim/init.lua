@@ -7,7 +7,6 @@ if not vim.g.vscode then
   require("lazy_init")
   require("awesometaro")
   require("toggle_term")
-  require("my_tree_sitter")
   require("utils.my_phptools")
   require("utils.quickrun_php").setup()
   require("utils.rpst_tool").setup()
