@@ -11,6 +11,8 @@ idiomatic_version_file_enable_tools = ["ruby"]
 
 [tools]
 node = "24.14.1"
+"npm:@biomejs/biome" = "2.4.4"
+"npm:@mermaid-js/mermaid-cli" = "11.4.0"
 php = "8.3"
 ruby = "4.0.2"
 yarn = "1.22.15"

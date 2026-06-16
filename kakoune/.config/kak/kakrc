@@ -236,7 +236,7 @@ declare-git-mode
 map global user g ': enter-user-mode git<ret>' -docstring "git mode"
 
 # git gutter
-source "%val{config}/plugins/simple-git-gutter.kak/git_gutter.kak"
+# source "%val{config}/plugins/simple-git-gutter.kak/git_gutter.kak"
 
 hook global BufCreate .*\.html\.erb %{
     set-option buffer filetype erb
@@ -247,90 +247,90 @@ hook global BufCreate .*\.tpl %{
 }
 
 # kakoune-lsp: 起動時に毎回バイナリから設定を取り込む。
-eval %sh{kak-lsp}
+# eval %sh{kak-lsp}
+# 
+# set-option global lsp_snippet_support false
+# 
+# map global user l ':enter-user-mode lsp<ret>' -docstring "LSP Mode"
+# map global goto d <esc>:lsp-definition<ret> -docstring "LSP definition"
+# map global goto r <esc>:lsp-references<ret> -docstring "LSP references"
+# map global goto i <esc>:lsp-implementation<ret> -docstring "LSP implementation"
+# map global goto y <esc>:lsp-type-definition<ret> -docstring "LSP type definition"
+# map global user a <esc>:lsp-code-actions<ret> -docstring 'LSP code actions'
+# map global user R <esc>:lsp-rename-prompt<ret> -docstring 'LSP rename'
+# map global insert <tab> '<a-;>:try lsp-snippets-select-next-placeholders catch %{ execute-keys -with-hooks <lt>tab> }<ret>'
+# 
+# map global object a '<a-semicolon>lsp-object<ret>' -docstring 'LSP any symbol'
+# map global object <a-a> '<a-semicolon>lsp-object<ret>' -docstring 'LSP any symbol'
+# map global object f '<a-semicolon>lsp-object Function Method<ret>' -docstring 'LSP function or method'
+# map global object t '<a-semicolon>lsp-object Class Interface Module Namespace Struct<ret>' -docstring 'LSP class or module'
+# map global object d '<a-semicolon>lsp-diagnostic-object error warning<ret>' -docstring 'LSP error and warnings'
+# map global object D '<a-semicolon>lsp-diagnostic-object error<ret>' -docstring 'LSP error'
 
-set-option global lsp_snippet_support false
-
-map global user l ':enter-user-mode lsp<ret>' -docstring "LSP Mode"
-map global goto d <esc>:lsp-definition<ret> -docstring "LSP definition"
-map global goto r <esc>:lsp-references<ret> -docstring "LSP references"
-map global goto i <esc>:lsp-implementation<ret> -docstring "LSP implementation"
-map global goto y <esc>:lsp-type-definition<ret> -docstring "LSP type definition"
-map global user a <esc>:lsp-code-actions<ret> -docstring 'LSP code actions'
-map global user R <esc>:lsp-rename-prompt<ret> -docstring 'LSP rename'
-map global insert <tab> '<a-;>:try lsp-snippets-select-next-placeholders catch %{ execute-keys -with-hooks <lt>tab> }<ret>'
-
-map global object a '<a-semicolon>lsp-object<ret>' -docstring 'LSP any symbol'
-map global object <a-a> '<a-semicolon>lsp-object<ret>' -docstring 'LSP any symbol'
-map global object f '<a-semicolon>lsp-object Function Method<ret>' -docstring 'LSP function or method'
-map global object t '<a-semicolon>lsp-object Class Interface Module Namespace Struct<ret>' -docstring 'LSP class or module'
-map global object d '<a-semicolon>lsp-diagnostic-object error warning<ret>' -docstring 'LSP error and warnings'
-map global object D '<a-semicolon>lsp-diagnostic-object error<ret>' -docstring 'LSP error'
-
-hook global WinSetOption filetype=(php|go|ruby|typescript|erb|smarty|sql) %{
-    lsp-enable-window
-}
+# hook global WinSetOption filetype=(php|go|ruby|typescript|erb|smarty|sql) %{
+#     lsp-enable-window
+# }
 
 source "%val{config}/sqls.kak"
 
 # efm-langserver: phpstan / mago などの外部ツールを LSP 経由で利用する。
 # kak-lsp 標準の php フック(intelephense)に追記する形で上書き。
-hook global BufSetOption filetype=php %{
-    set-option buffer lsp_servers %{
-        [intelephense]
-        root_globs = ["composer.json"]
-        args = ["--stdio"]
-
-        # [efm-langserver]
-        # command = "efm-langserver"
+# hook global BufSetOption filetype=php %{
+    # set-option buffer lsp_servers %{
+        # [intelephense]
         # root_globs = ["composer.json"]
-    }
-}
+        # args = ["--stdio"]
+# 
+        # # [efm-langserver]
+        # # command = "efm-langserver"
+        # # root_globs = ["composer.json"]
+    # }
+# }
 
 # erb / smarty は kak-lsp 標準の filetype フックがないので自前で lsp_servers を設定。
 # kak-lsp 標準のフックは BufSetOption だが、これらは WinSetOption でも問題なく機能する。
-hook global BufSetOption filetype=erb %{
-    set-option buffer lsp_servers %{
-        [herb]
-        command = "herb-language-server"
-        args = ["--stdio"]
-        root_globs = ["Gemfile", ".git"]
-    }
-}
+# hook global BufSetOption filetype=erb %{
+    # set-option buffer lsp_servers %{
+        # [herb]
+        # command = "herb-language-server"
+        # args = ["--stdio"]
+        # root_globs = ["Gemfile", ".git"]
+    # }
+# }
 
-hook global BufSetOption filetype=smarty %{
-    set-option buffer lsp_servers %{
-        [html]
-        command = "vscode-html-language-server"
-        args = ["--stdio"]
-        root_globs = [".git"]
-        [html.settings.html.format]
-        enable = false
-    }
-}
+# hook global BufSetOption filetype=smarty %{
+    # set-option buffer lsp_servers %{
+        # [html]
+        # command = "vscode-html-language-server"
+        # args = ["--stdio"]
+        # root_globs = [".git"]
+        # [html.settings.html.format]
+        # enable = false
+    # }
+# }
 
 
 map global normal '#' :comment-line<ret>
 map global user y '<a-|>pbcopy<ret>' -docstring "yank to clipboard"
-add-highlighter global/ number-lines -hlcursor
+add-highlighter global/ number-lines -relative -hlcursor
 add-highlighter global/ show-matching
 add-highlighter global/ dynregex '%reg{/}' 0:+bu
 add-highlighter global/ column 80 default,rgb:303030
 declare-option -hidden str lsp_modeline ""
 set-option global modelinefmt '%val{bufname} %val{cursor_line}:%val{cursor_char_column} {{context_info}} {{mode_info}} - %val{client}@[%val{session}]'
-set-option global modelinefmt "%opt{lsp_modeline} %opt{modelinefmt}"
+# set-option global modelinefmt "%opt{lsp_modeline} %opt{modelinefmt}"
 
 
 #--- 補完候補の選択remap
-hook global InsertCompletionShow .* %{
-    map window insert <tab> <c-n> -docstring "next completion"
-    map window insert <s-tab> <c-p> -docstring "prev completion"
-}
+# hook global InsertCompletionShow .* %{
+    # map window insert <tab> <c-n> -docstring "next completion"
+    # map window insert <s-tab> <c-p> -docstring "prev completion"
+# }
 
-hook global InsertCompletionHide .* %{
-    unmap window insert <tab> <c-n>
-    unmap window insert <s-tab> <c-p>
-}
+# hook global InsertCompletionHide .* %{
+    # unmap window insert <tab> <c-n>
+    # unmap window insert <s-tab> <c-p>
+# }
 
 declare-user-mode window
 map global normal <c-w> ':enter-user-mode window<ret>'
@@ -413,3 +413,12 @@ map global user p ':enter-user-mode my-picker<ret>' -docstring "my picker..."
 map global my-picker g ': my-file-picker<ret>' -docstring "fd"
 map global my-picker s ': my-git-diff-picker<ret>' -docstring "git changes"
 map global my-picker p ': my-git-files-picker<ret>' -docstring "git ls-files"
+
+hook global WinSetOption filetype=(php) %{
+    set-option buffer lintcmd "typos %val{buffile}"
+}
+
+define-command cspell-enable %{
+    set-option buffer lintcmd "%val{config}/scripts/kak-cspell"
+}
+

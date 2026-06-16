@@ -1,0 +1,6 @@
+#!/bin/sh
+
+file="$1"
+
+cspell --no-progress --no-summary "$file" 2>/dev/null |
+    sed -E 's/^([^:]+):([0-9]+):([0-9]+) - (.*)$/\1:\2:\3: Warning: \4/'

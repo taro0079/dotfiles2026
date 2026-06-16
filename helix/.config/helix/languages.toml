@@ -182,7 +182,7 @@ name = "php"
 indent = { tab-width = 4, unit = "    "}
 # lsp-ai を追加
 language-servers = [
-# {name = "intelephense"},
+{name = "intelephense"},
 {name = "hx-lsp"},
 # {name = "gpt"},
 {name = "typos"},
