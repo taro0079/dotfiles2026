@@ -50,6 +50,8 @@ return {
         pattern = filetypes,
         callback = function()
           pcall(vim.treesitter.start)
+          -- Use treesitter-based indentation (overrides the bundled indent/php.vim GetPhpIndent()).
+          vim.bo.indentexpr = "v:lua.require'nvim-treesitter.indent'.get_indent(v:lnum)"
           vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
           vim.wo.foldmethod = "expr"
           vim.wo.foldlevel = 90
