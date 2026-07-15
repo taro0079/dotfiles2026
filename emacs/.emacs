@@ -21,7 +21,7 @@
 (setq-default tab-width 4)
 (global-display-line-numbers-mode t)
 (global-auto-revert-mode 1)
-(let ((mono-spaced-font "CaskaydiaCove Nerd Font")
+(let ((mono-spaced-font "MintMono Nerd Font")
       (proportionately-spaced-font "Sans"))
   (set-face-attribute 'default nil :family mono-spaced-font :height 140)
   (set-face-attribute 'fixed-pitch nil :family mono-spaced-font :height 1.0)
@@ -66,6 +66,9 @@
 (use-package emacs
   :custom
   (tab-always-indent 'complete)
+  (completion-ignore-case t)
+  (read-buffer-completion-ignore-case t)
+  (read-file-name-completion-ignore-case t)
   (text-mode-ispell-word-completion nil)
   (read-extended-command-predicate #'command-completion-default-include-p))
 
@@ -76,6 +79,21 @@
                       ))
   :mode "\\.php\\'"
     )
+;; PHPStan (静的解析) を flymake のバックエンドとして利用する。
+;; プロジェクトごとの設定 (実行ファイル・level・config) は .dir-locals.el で行う。
+;; 例:
+;;   ((nil . ((php-project-root . auto)
+;;            (phpstan-executable . (root . "vendor/bin/phpstan"))
+;;            (phpstan-level . max))))
+(use-package phpstan
+  :straight t
+  :after php-mode)
+;; flymake-phpstan-turn-on は phpstan ではなく flymake-phpstan パッケージに定義されているため
+;; こちらで hook を設定する (phpstan 側の :hook に書くと autoload に失敗する)
+(use-package flymake-phpstan
+  :straight t
+  :after phpstan
+  :hook (php-mode . flymake-phpstan-turn-on))
 (use-package ddskk
   :straight t
   :bind
@@ -151,8 +169,16 @@
       caps))
   (advice-add 'eglot-client-capabilities :around #'my-eglot-disable-file-watching))
 
+;; jsonrpc は eglot より新しい版が必要 (:cancel-on-quit 引数)。
+;; 同梱の古い版が使われると corfu 補完時に
+;; "Keyword argument :cancel-on-quit not one of ..." エラーになるため
+;; eglot より先に straight 経由で更新版をロードする。
+(use-package jsonrpc
+  :straight t)
+
 ;; サーバープログラムの設定 (Node 20とメモリ拡張の安全設定は維持)
 (use-package eglot
+  :straight t
   :custom
   (eglot-sync-connect 1)
   (eglot-autoshutdown t)
@@ -187,12 +213,15 @@
   (corfu-cycle t)
   (corfu-quit-no-match nil)
   (corfu-always-indent 'complete)
+  (corfu-popupinfo-delay '(0.2 . 0.1))
   :init
-  (global-corfu-mode))
+  (global-corfu-mode)
+  (corfu-popupinfo-mode 1))
 ;; Cape
 (use-package cape
   :ensure t
   :after corfu
+  :demand t
   :bind ("C-c p" . cape-prefix-map)
   :config
   (defun my/elisp-capf ()
@@ -201,17 +230,17 @@
                        #'cape-elisp-symbol
                        #'yasnippet-capf
                        #'cape-dabbrev
-                       #'cape-file)))
-    (add-hook 'emacs-lisp-mode-hook #'my/elisp-capf)
+                       #'cape-file))))
+  (add-hook 'emacs-lisp-mode-hook #'my/elisp-capf)
+
   (defun my/eglot-capf ()
     (setq-local completion-at-point-functions
-                (list (cape-capf-super
-                       #'eglot-completion-at-point
-                       #'yasnippet-capf
-                       #'cape-keyword
-                       #'cape-dabbrev)
-                      #'cape-file)))
-  (add-hook 'eglot-managed-mode-hook #'my/eglot-capf))
+                (list #'eglot-completion-at-point
+                      #'yasnippet-capf
+                      #'cape-file
+                      #'cape-keyword
+                      #'cape-dabbrev)))
+  (add-hook 'eglot-managed-mode-hook #'my/eglot-capf)
   :init
   (add-hook 'completion-at-point-functions #'cape-dabbrev t)
   (add-hook 'completion-at-point-functions #'cape-file t)
@@ -244,6 +273,7 @@
 
 (use-package yasnippet-capf
   :ensure t
+  :demand t
   :after cape)
 
 (use-package diff-hl

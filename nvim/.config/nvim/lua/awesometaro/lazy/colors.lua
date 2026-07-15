@@ -19,7 +19,7 @@ return {
     lazy = false,
     priority = 1000,
     opts = {
-      transparent = true,
+      transparent = false,
     },
   },
   {
@@ -84,6 +84,9 @@ return {
     "catppuccin/nvim",
     name = "catppuccin",
     priority = 1000,
+    opts = {
+      transparent_background = true,
+    },
   },
   {
     "rebelot/kanagawa.nvim",
@@ -99,7 +102,7 @@ return {
         },
       })
 
-      ColorMyPencils("tokyonight-moon")
+      ColorMyPencils("catppuccin-mocha")
     end,
   },
 }

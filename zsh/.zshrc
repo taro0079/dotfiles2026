@@ -6,6 +6,7 @@ export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/.volta/bin:$PATH"
 export PATH="/usr/local/texlive/2024/bin/universal-darwin:$PATH"
 alias E='open /Applications/Emacs.app'
+alias fghq='cd $(ghq list -p | fzf)'
 alias fssh='fuzzy-ssh-selector.sh'
 . "$HOME/.cargo/env"
 

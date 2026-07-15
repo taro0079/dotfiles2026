@@ -7,6 +7,7 @@ return {
     "hrsh7th/cmp-nvim-lsp",
     "hrsh7th/cmp-buffer",
     "hrsh7th/cmp-path",
+    "f3fora/cmp-spell",
     "hrsh7th/cmp-cmdline",
     "hrsh7th/nvim-cmp",
     "L3MON4D3/LuaSnip",
@@ -252,6 +253,15 @@ return {
         { name = "lazydev", group_index = 0 },
         { name = "nvim_lsp" },
         { name = "luasnip" }, -- For luasnip users.
+        {
+          name = "spell",
+          option = {
+            keep_all_entries = false,
+            enable_in_context = function()
+              return true
+            end,
+          },
+        },
       }, {
         { name = "buffer" },
       }),

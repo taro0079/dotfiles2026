@@ -352,7 +352,6 @@ function ExternalCommandOutputToNewBuffer(command)
         let current_line += 1
     endfor
 endfunction
-command! IloveRelease call IloveReleaseCommand()
 
 function! PhpUnitRunner()
     let file = expand('%')
@@ -457,14 +456,14 @@ let test#php#phpunit#executable = 'docker compose -f ../docker-compose.yml run
 function! s:ToRemote(local_path, remote_path, use_mkpath) abort
     let file_path = expand('%:p')
     let local_expanded = expand(a:local_path)
-    
+
     " ファイルがプロジェクトディレクトリ内にあるか確認
     if file_path =~# '^' . escape(local_expanded, '/')
         echo 'File is inside the project directory'
-        
+
         " 相対パスを取得
         let relative_path = substitute(file_path, '^' . escape(local_expanded, '/'), '', '')
-        
+
         if a:use_mkpath
             " rsync コマンドを構築
             let cmd = printf("rsync -aqz --no-motd --mkpath -e 'ssh -q' %s %s%s",
@@ -478,7 +477,7 @@ function! s:ToRemote(local_path, remote_path, use_mkpath) abort
                       \ relative_path)
         endif
 
-        
+
         " 非同期でコマンドを実行
         let job = job_start([&shell, &shellcmdflag, cmd], {
                     \ 'out_cb': function('s:OnStdout'),
@@ -734,7 +733,6 @@ nnoremap <silent> <space>pq :Rg<CR>
 " easymotion config --- {{{1
 map <Leader>f <Plug>(easymotion-bd-f)
 nmap <Leader>f <Plug>(easymotion-overwin-f)
-
 " pair config --- {{{1
 inoremap (; (<CR>)<C-c>O<tab><Esc>zzi
 inoremap {, { <CR> },<C-c>O<tab><Esc>zzi

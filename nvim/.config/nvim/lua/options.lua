@@ -27,3 +27,5 @@ vim.opt.autoread = true
 vim.opt.clipboard = "unnamedplus"
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
+vim.opt.spell = true
+vim.opt.spelllang = { "en_us" }
