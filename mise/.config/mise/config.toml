@@ -5,11 +5,15 @@ idiomatic_version_file_enable_tools = ["ruby"]
 [settings.ruby]
 compile = false
 
+[settings.aqua]
+baked_registry = false
+
 [tools]
-node = "24.14.1"
+node = "lts"
 "npm:@biomejs/biome" = "2.4.4"
 "npm:@mermaid-js/mermaid-cli" = "11.4.0"
 php = "8.3"
+pnpm = "latest"
 ruby = "4.0.2"
 yarn = "1.22.15"
 

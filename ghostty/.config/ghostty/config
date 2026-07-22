@@ -1,4 +1,4 @@
-font-family = "Moralerspace Radon NF"
+font-family = "Mint Mono"
 font-size = 14
 # font-thicken=true
 font-feature=calt, liga, lig
@@ -10,7 +10,7 @@ window-padding-balance = true
 cursor-style = block
 fullscreen = false
 cursor-opacity = 1
-background-opacity =0.8
+background-opacity =0.95
 macos-titlebar-style= transparent
 macos-option-as-alt=true
 clipboard-read = allow

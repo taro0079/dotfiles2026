@@ -235,8 +235,9 @@
 
   (defun my/eglot-capf ()
     (setq-local completion-at-point-functions
-                (list #'eglot-completion-at-point
-                      #'yasnippet-capf
+                (list (cape-capf-super
+                       #'eglot-completion-at-point
+                       #'yasnippet-capf)
                       #'cape-file
                       #'cape-keyword
                       #'cape-dabbrev)))
@@ -275,6 +276,22 @@
   :ensure t
   :demand t
   :after cape)
+
+(use-package claude-code
+  :straight (:type git
+                   :host github
+                   :repo "stevemolitor/claude-code.el"
+                   :branch "main"
+                   :depth 1
+                   :files ("*.el" (:exclude "images/*")))
+  :custom
+  (claude-code-terminal-backend 'vterm)
+
+  :bind-keymap
+  ("C-c C-l" . claude-code-command-map)
+
+  :config
+  (claude-code-mode))
 
 (use-package diff-hl
   :ensure t
