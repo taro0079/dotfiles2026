@@ -13,6 +13,7 @@
 -- require("utils.phpunit").setup()
 require("utils.transport").setup()
 require("utils.cmd_to_quickfix").setup()
+require("utils.php_getset").setup()
 
 -- =============================================================================
 -- rpst-v2 ファイル保存時に自動転送
@@ -43,6 +44,18 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.opt_local.shiftwidth = 4 -- インデント幅
     vim.opt_local.tabstop = 4 -- タブ幅
     vim.opt_local.softtabstop = 4 -- ソフトタブ幅
+
+    -- 変数名・メソッド名・)・] の直後で `-` を打つと `->` に自動変換する
+    -- （それ以外の位置ではそのまま `-` を入力する）
+    vim.keymap.set("i", "-", function()
+      local col = vim.fn.col(".")
+      -- カーソル直前の1文字
+      local prev = vim.fn.getline("."):sub(col - 1, col - 1)
+      if prev:match("[%w_%)%]]") then
+        return "->"
+      end
+      return "-"
+    end, { expr = true, buffer = true, desc = "PHP: 変数/メソッドの後の - を -> に変換" })
   end,
 })
 
