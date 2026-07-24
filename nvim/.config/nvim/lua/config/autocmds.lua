@@ -13,6 +13,7 @@
 -- require("utils.phpunit").setup()
 require("utils.transport").setup()
 require("utils.cmd_to_quickfix").setup()
+require("utils.php_getset").setup()
 
 -- =============================================================================
 -- rpst-v2 ファイル保存時に自動転送
