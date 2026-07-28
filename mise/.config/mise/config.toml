@@ -12,6 +12,7 @@ baked_registry = false
 node = "lts"
 "npm:@biomejs/biome" = "2.4.4"
 "npm:@mermaid-js/mermaid-cli" = "11.4.0"
+"npm:hunkdiff" = "latest"
 php = "8.3"
 pnpm = "latest"
 ruby = "4.0.2"

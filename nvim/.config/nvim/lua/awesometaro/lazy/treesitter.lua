@@ -50,12 +50,14 @@ return {
         pattern = filetypes,
         callback = function()
           pcall(vim.treesitter.start)
-          -- Use treesitter-based indentation (overrides the bundled indent/php.vim GetPhpIndent()).
-          vim.bo.indentexpr = "v:lua.require'nvim-treesitter.indent'.get_indent(v:lnum)"
           vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
           vim.wo.foldmethod = "expr"
           vim.wo.foldlevel = 90
-          vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+          -- PHP は treesitter のインデントクエリが機能せず全行が潰れるため、
+          -- 同梱の indent/php.vim (GetPhpIndent) に任せる
+          if vim.bo.filetype ~= "php" and vim.bo.filetype ~= "phpdoc" then
+            vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+          end
         end,
       })
 

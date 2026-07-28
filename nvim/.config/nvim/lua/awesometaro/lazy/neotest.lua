@@ -8,35 +8,9 @@ return {
     "olimorris/neotest-phpunit",
   },
   config = function()
-    -- local neotest = require("neotest")
-    -- neotest.setup({
-    --   adapters = {
-    --     -- require("neotest-phpunit"),
-    --     require("neotest-phpunit")({
-    --       phpunit_cmd = function()
-    --         local root = vim.fn.getcwd()
-    --         return {
-    --           root .. "/vendor/bin/phpunit",
-    --           "--configuration",
-    --           root .. "/tests/app/phpunit/v9/phpunit.xml.dist",
-    --         }
-    --       end,
-    --       --   filter_dirs = { ".git", "node_modules", "vendor", "storage", "bootstrap" },
-    --     }),
-    --   },
-    -- })
     require("neotest").setup({
       adapters = {
-        require("neotest-phpunit")({
-          phpunit_cmd = function()
-            local cwd = vim.fn.getcwd()
-            if string.find(cwd, "rpst%-api") then
-              return "rpstapi-unittest.sh"
-            elseif string.find(cwd, "rpst%-v2") then
-              return "rpst-remote-phpunit.sh"
-            end
-          end,
-        }),
+        require("neotest-phpunit"),
       },
     })
     vim.keymap.set("n", "<leader>tn", function()
@@ -60,24 +34,5 @@ return {
       '<Cmd>lua require("neotest").summary.toggle()<CR>',
       { desc = "Toggle test summary" }
     )
-    -- vim.keymap.set("n", "<leader>tT", function()
-    --   if not is_rpst_buffer() then
-    --     vim.notify("rpst-v2配下ではないため、PHPUnit(SSH)は無効です", vim.log.levels.WARN)
-    --     return
-    --   end
-    --   local path_map = {
-    --     local_root = "/Users/taro_morita/ghq/rpst-v2",
-    --     remote_root = "/var/www/rpst-v2/dev",
-    --   }
-    --
-    --   local function to_remote_path(path)
-    --     local escaped = path_map.local_root:gsub("([^%w])", "%%%1")
-    --     return path:gsub(escaped, path_map.remote_root)
-    --   end
-    --   local remote_path = to_remote_path(vim.fn.expand("%:p"))
-    --   print(vim.fn.expand("%:p"))
-    --   print(remote_path)
-    --   neotest.run.run(remote_path)
-    -- end, { desc = "Run Rpst Unit test" })
   end,
 }
