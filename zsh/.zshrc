@@ -86,3 +86,4 @@ export PATH="${HOME}/.local/bin:${PATH}"
 eval "$("$HOME/.local/bin/mise" activate zsh)"
 # Homebrew
 eval "$(/opt/homebrew/bin/brew shellenv)"
+eval "$(direnv hook zsh)"
