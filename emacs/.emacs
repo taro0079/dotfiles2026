@@ -1,4 +1,5 @@
-;; .emacs --- Emacs configuration -*- lexical-binding: t; -*-
+;;; .emacs --- Emacs configuration -*- lexical-binding: t; -*-
+
 (scroll-bar-mode -1)
 (electric-pair-mode 1)
 (menu-bar-mode 1)
@@ -9,7 +10,6 @@
 (global-set-key (kbd "C-c <down>") 'windmove-down)
 (global-set-key (kbd "C-c <left>") 'windmove-left)
 (global-set-key (kbd "C-c <right>") 'windmove-right)
-;; (load-theme 'tsdh-dark)
 ;; backup file
 (setq my-backup-dir (expand-file-name "~/.emacs.d/backups/"))
 (unless (file-exists-p my-backup-dir)
@@ -21,25 +21,17 @@
 (setq-default tab-width 4)
 (global-display-line-numbers-mode t)
 (global-auto-revert-mode 1)
-(let ((mono-spaced-font "MintMono Nerd Font")
-      (proportionately-spaced-font "Sans"))
-  (set-face-attribute 'default nil :family mono-spaced-font :height 140)
-  (set-face-attribute 'fixed-pitch nil :family mono-spaced-font :height 1.0)
-  (set-face-attribute 'variable-pitch nil :family proportionately-spaced-font :height 1.0))
+(add-to-list 'default-frame-alist '(font . "Mint Mono-14"))
 
+(when (display-graphic-p)
+  (set-frame-font "Mint Mono-14" nil t))
 (setq custom-file (locate-user-emacs-file "custome.el"))
-;; sql
-(load (expand-file-name "~/.emacs.d/private-sql.el") t)
-(use-package sql
-  :defer t
-  :bind (:map sql-mode-map
-              ("C-c b" . sql-set-sqli-buffer)))
-
-
 (load custom-file :no-error-file-is-missing)
 
+
 ;; package.el is not needed — straight.el handles everything
-(require 'package)
+;; (package-initialize)
+
 
 ;; straight setting
  (defvar bootstrap-version)
@@ -66,9 +58,6 @@
 (use-package emacs
   :custom
   (tab-always-indent 'complete)
-  (completion-ignore-case t)
-  (read-buffer-completion-ignore-case t)
-  (read-file-name-completion-ignore-case t)
   (text-mode-ispell-word-completion nil)
   (read-extended-command-predicate #'command-completion-default-include-p))
 
@@ -79,21 +68,7 @@
                       ))
   :mode "\\.php\\'"
     )
-;; PHPStan (静的解析) を flymake のバックエンドとして利用する。
-;; プロジェクトごとの設定 (実行ファイル・level・config) は .dir-locals.el で行う。
-;; 例:
-;;   ((nil . ((php-project-root . auto)
-;;            (phpstan-executable . (root . "vendor/bin/phpstan"))
-;;            (phpstan-level . max))))
-(use-package phpstan
-  :straight t
-  :after php-mode)
-;; flymake-phpstan-turn-on は phpstan ではなく flymake-phpstan パッケージに定義されているため
-;; こちらで hook を設定する (phpstan 側の :hook に書くと autoload に失敗する)
-(use-package flymake-phpstan
-  :straight t
-  :after phpstan
-  :hook (php-mode . flymake-phpstan-turn-on))
+
 (use-package ddskk
   :straight t
   :bind
@@ -102,7 +77,7 @@
   (setq skk-show-mode-show t)
   (setq skk-egg-like-newline t)
   (setq skk-jisyo-code 'utf-8)
-  (setq skk-large-jisyo "~/.config/SKK-JISYO.L")
+  (setq skk-large-jisyo "~/.config/SKK-JISYO.L")yy
   (setq skk-server-host "localhost")
   (setq skk-server-portnum 1178))
 ;; 候補を縦に並べる
@@ -110,14 +85,14 @@
   :straight t
   :init
   (vertico-mode))
+(use-package gnuplot
+  )
 ;; 絞り込みロジックを「順不同・部分一致」にする
 (use-package orderless
   :straight t
   :custom
   (completion-styles '(orderless basic))
-  (orderless-matching-styles '(orderless-literal orderless-regexp orderless-flex))
   (completion-category-overrides '((file (styles basic partial-completion)))))
-
 (use-package marginalia
   :straight t
   :init
@@ -127,7 +102,7 @@
   ;; よく使う標準コマンドを Consult の便利なコマンドに置き換える
   :bind (("C-x b" . consult-buffer)         ;; バッファ切り替え（最近使ったファイルなども含む）
          ("C-x 4 b" . consult-buffer-other-window)
-         ("C-c l" . consult-line)             ;; 現在のバッファ内を検索（プレビュー付き）
+         ("C-s" . consult-line)             ;; 現在のバッファ内を検索（プレビュー付き）
          ("M-y" . consult-yank-pop)         ;; クリップボード（kill-ring）の履歴から貼り付け
          ("M-g g" . consult-goto-line)      ;; 行指定ジャンプ
          ("M-g i" . consult-imenu)          ;; 関数や見出しへのジャンプ
@@ -136,25 +111,13 @@
   :config
   ;; Consultのプレビューを遅延させる（動作を軽くするため）
   (setq consult-preview-key 'any))
-
-;; terminal emulator
-(use-package vterm
-  :ensure t
-  :bind ("C-c C-v" . vterm))
-;; どこにでもジャンプできるやつ
-(use-package avy
-  :straight t
-  :bind (("C-:" . avy-goto-char)
-         ("C-'" . avy-goto-char2)
-         ("M-g w" . avy-goto-word1)
-         ("M-g l" . avy-goto-line)))
 (use-package consult-ghq
   :straight t
   :bind
   ("C-c g p" . consult-ghq-switch-project)
   ("C-c g f" . consult-ghq-find)
-  ("C-c g g" . consult-ghq-grep))
-
+  ("C-c g g" . consult-ghq-grep)
+)
 ;; (use-package inkpot-theme
 ;;   :straight t
 ;;   :config
@@ -169,16 +132,8 @@
       caps))
   (advice-add 'eglot-client-capabilities :around #'my-eglot-disable-file-watching))
 
-;; jsonrpc は eglot より新しい版が必要 (:cancel-on-quit 引数)。
-;; 同梱の古い版が使われると corfu 補完時に
-;; "Keyword argument :cancel-on-quit not one of ..." エラーになるため
-;; eglot より先に straight 経由で更新版をロードする。
-(use-package jsonrpc
-  :straight t)
-
 ;; サーバープログラムの設定 (Node 20とメモリ拡張の安全設定は維持)
 (use-package eglot
-  :straight t
   :custom
   (eglot-sync-connect 1)
   (eglot-autoshutdown t)
@@ -187,16 +142,11 @@
   :config
   (add-to-list 'eglot-server-programs
                '((php-mode php-ts-mode) . ("mise" "exec" "node@20" "--" "env" "NODE_OPTIONS=--max-old-space-size=8192" "intelephense" "--stdio")))
-  (add-to-list 'eglot-server-programs
-               '(sql-mode . ("~/go/bin/sqls")))
 
   :hook
   ((python-ts-mode . eglot-ensure)
    (lua-ts-mode . eglot-ensure)
-   (go-ts-mode . eglot-ensure)
-   (go-mode . eglot-ensure)
    (js-ts-mode . eglot-ensure)
-   (sql-mode . eglot-ensure)
    (typescript-ts-mode . eglot-ensure)
    (php-mode . eglot-ensure)
    (php-ts-mode . eglot-ensure)
@@ -204,50 +154,33 @@
 
 ;; Completion: Corfu
 (use-package corfu
-;;  :after eglot                         
+  :after eglot
   :ensure t
   :custom
   (corfu-auto t)
-  (corfu-auto-delay 0)
-  (corfu-auto-prefix 1)
   (corfu-cycle t)
-  (corfu-quit-no-match nil)
-  (corfu-always-indent 'complete)
-  (corfu-popupinfo-delay '(0.2 . 0.1))
-  :init
-  (global-corfu-mode)
-  (corfu-popupinfo-mode 1))
+  (corfu-quit-no-match t)
+  :config
+  (global-corfu-mode))
+
 ;; Cape
 (use-package cape
   :ensure t
   :after corfu
-  :demand t
   :bind ("C-c p" . cape-prefix-map)
-  :config
-  (defun my/elisp-capf ()
-    (setq-local completion-at-point-functions
-                (list (cape-capf-super
-                       #'cape-elisp-symbol
-                       #'yasnippet-capf
-                       #'cape-dabbrev
-                       #'cape-file))))
-  (add-hook 'emacs-lisp-mode-hook #'my/elisp-capf)
-
-  (defun my/eglot-capf ()
-    (setq-local completion-at-point-functions
-                (list (cape-capf-super
-                       #'eglot-completion-at-point
-                       #'yasnippet-capf)
-                      #'cape-file
-                      #'cape-keyword
-                      #'cape-dabbrev)))
-  (add-hook 'eglot-managed-mode-hook #'my/eglot-capf)
   :init
-  (add-hook 'completion-at-point-functions #'cape-dabbrev t)
-  (add-hook 'completion-at-point-functions #'cape-file t)
-  (add-hook 'completion-at-point-functions #'cape-elisp-block t)
-  (add-hook 'completion-at-point-functions #'yasnippet-capf))
-;;(add-hook 'completion-at-point-functions #'eglot-completion-at-point))
+  (add-hook 'completion-at-point-functions #'cape-dabbrev)
+  (add-hook 'completion-at-point-functions #'cape-file)
+  (add-hook 'completion-at-point-functions #'cape-elisp-block)
+  (add-hook 'completion-at-point-functions #'yasnippet-capf)
+  (add-hook 'completion-at-point-functions #'eglot-completion-at-point))
+
+;; Eldoc + Eldoc-box
+(use-package eldoc
+  :custom
+  (eldoc-idle-delay 0.5)
+  :hook (eglot-managed-mode . eldoc-mode))
+
 (use-package eldoc-box
   :straight t
   :config
@@ -274,37 +207,9 @@
 
 (use-package yasnippet-capf
   :ensure t
-  :demand t
-  :after cape)
-
-(use-package claude-code
-  :straight (:type git
-                   :host github
-                   :repo "stevemolitor/claude-code.el"
-                   :branch "main"
-                   :depth 1
-                   :files ("*.el" (:exclude "images/*")))
-  :custom
-  (claude-code-terminal-backend 'vterm)
-
-  :bind-keymap
-  ("C-c C-l" . claude-code-command-map)
-
+  :after cape
   :config
-  (claude-code-mode))
-
-(use-package diff-hl
-  :ensure t
-  :init
-  (setq diff-hl-draw-borders nil)
-  
-  :config
-  (global-diff-hl-mode)
-  (add-hook 'after-save-hook 'diff-hl-update)
-  (diff-hl-flydiff-mode 1)
-  (diff-hl-margin-mode 1))
-;;  (add-hook 'dired-mode-hook 'diff-hl-dired-mode-hook))
-
+  (add-to-list 'completion-at-point-functions #'yasnippet-capf))
 
 (use-package magit
   :straight t
@@ -312,109 +217,20 @@
   (magit-auto-revert-mode t)
   :bind
   (("C-x g" . magit-status)))
-(use-package puni
-  :defer t
-  :bind (("C-=" . puni-expand-region)
-         ("C--" . puni-contract-region)
-         )
-
-  
-  )
-(use-package majutsu
-  :straight (:host github :repo "0WD0/majutsu"))
 
 (put 'upcase-region 'disabled nil)
+(setq org-default-notes-file "~/org/notes.org")
 
-(use-package web-mode
-  :ensure t
-  :mode ("\\.tpl\\'" . web-mode)
-  :custom
-  (web-mode-markup-indent-offset 4)
-  (web-mode-css-indent-offset 4)
-  (web-mode-code-indent-offset 4)
-  (web-mode-attr-indent-offset 4)
-  (web-mode-enable-auto-pairing t)
-  (web-mode-enable-css-colorization t)
+(global-set-key (kbd "C-c c") #'org-capture)
+(setq org-capture-templates
+      '(("t" "Todo" entry
+         (file "~/org/inbox.org")
+         "* TODO %?\n  %U\n")
 
-  :config
-  (add-to-list 'web-mode-engines-alist '("smarty" . "\\.tpl\\'")))
+        ("n" "Note" entry
+         (file "~/org/notes.org")
+         "* %?\n  %U\n")
 
-;; org
-(use-package org
-  :straight t
-  :bind
-  (("C-c c" . org-capture)
-   ("C-c a" . org-agenda)
-   ("C-c i" . (lambda () (interactive) (find-file "~/notes/inbox.org"))))
-  :custom
-  (org-directory "~/notes")
-  (org-default-notes-file (expand-file-name "inbox.org" org-directory))
-  (org-capture-templates
-   '(("t" "Task" entry (file+headline org-default-notes-file "Tasks")
-      "* TODO %?\n %U\n %a")
-     ("n" "Note" entry (file+headline org-default-notes-file "Notes")
-      "* %?\n created_at: %U\n %i\n %a"))))
-(put 'narrow-to-region 'disabled nil)
-
-;; tokyonight
-(use-package tokyo-night
-  :ensure t
-  :config
-  (load-theme 'tokyo-night-moon t)
-  )
-
-;; catppuccin
-(use-package catppuccin-theme
-  :ensure t
-  :config
-;;   (load-theme 'catppuccin t)            
-  )
-
-;; mode line (status line)
-(use-package moody
-  :ensure t
-  :config
-  (moody-replace-mode-line-front-space)
-  (moody-replace-mode-line-buffer-identification)
-  (moody-replace-vc-mode))
-
-(use-package flyspell
-  :hook
-  (php-ts-mode . flyspell-mode)
-  (ruby-ts-mode . flyspell-mode))
-
-;; fzf
-;; (use-package fzf-native
-;;   :straight (:host github :repo "dangduc/fzf-native" :files (:defaults "*.c" "*.h" "*.txt"))
-;;   :init
-;;   (setq fzf-native-always-compile-module t)
-;;   :config
-;;   (fzf-native-load-dyn))
-
-;; (use-package fzf-async
-;;   :straight (fzf-async :type git :host github :repo "jojojames/fzf-async")
-;;   :config
-;;   (fzf-async-setup))
-
-(defun my/rpst-gen-test ()
-  "現在のファイルの相対パスを引数にテストを生成し、作成されたファイルを展開する"
-  (interactive)
-  (let* ((pr (project-current t))
-         (root (project-root pr))
-         (filename (buffer-file-name))
-         ;; 1. プロジェクトルートからの相対パスを取得
-         (rel-path (file-relative-name filename root))
-         ;; 2. 実行するスクリプト名
-         (script-name "rpst-test-utils")
-         ;; 3. 実行ディレクトリをプロジェクトルートに固定
-         (default-directory root))
-    (if filename
-        (let* ((cmd (concat script-name " generate test " (shell-quote-argument rel-path)))
-               (raw-output (shell-command-to-string cmd))
-               (output (string-trim raw-output)))
-          ;; 4. 出力から "create パス" を探してファイルを開く
-          (if (string-match "create\\s-+\\(.+\\)$" output)
-              (let ((created-path (match-string 1 output)))
-                (find-file (expand-file-name created-path root)))
-            (message "Test generation failed or unexpected output: %s" output)))
-      (message "Current buffer is not visiting a file."))))
+        ("r" "Research idea" entry
+         (file "~/org/research.org")
+         "* %?\n  %U\n")))

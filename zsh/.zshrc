@@ -87,3 +87,6 @@ eval "$("$HOME/.local/bin/mise" activate zsh)"
 # Homebrew
 eval "$(/opt/homebrew/bin/brew shellenv)"
 eval "$(direnv hook zsh)"
+export ESPRESSO_ROOT="$HOME/materiapps/espresso/espresso-7.3-1"
+export PATH="$ESPRESSO_ROOT/bin:$PATH"
+export OMP_NUM_THREADS=1

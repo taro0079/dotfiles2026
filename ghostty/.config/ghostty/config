@@ -1,4 +1,4 @@
-font-family = "Mint Mono"
+font-family = "AcPlus IBM VGA 9x8"
 font-size = 14
 # font-thicken=true
 font-feature=calt, liga, lig
@@ -19,3 +19,7 @@ copy-on-select = clipboard
 # background-blur = true
 background-blur-radius = 20
 desktop-notifications = true
+
+# CRT-style post-processing shader
+custom-shader = /Users/awesometaro/.config/ghostty/shaders/retro-terminal.glsl
+custom-shader-animation = false
