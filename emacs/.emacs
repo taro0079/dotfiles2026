@@ -3,13 +3,14 @@
 (electric-pair-mode 1)
 (menu-bar-mode 1)
 (scroll-bar-mode 1)
+(global-visual-line-mode 1)
 (tool-bar-mode -1)
 ;; key setting
 (global-set-key (kbd "C-c <up>") 'windmove-up)
 (global-set-key (kbd "C-c <down>") 'windmove-down)
 (global-set-key (kbd "C-c <left>") 'windmove-left)
 (global-set-key (kbd "C-c <right>") 'windmove-right)
-(load-theme 'modus-vivendi t)
+;; (load-theme 'modus-vivendi t)
 ;; backup file
 (setq my-backup-dir (expand-file-name "~/.emacs.d/backups/"))
 (unless (file-exists-p my-backup-dir)
@@ -21,7 +22,7 @@
 (setq-default tab-width 4)
 (global-display-line-numbers-mode t)
 (global-auto-revert-mode 1)
-(let ((mono-spaced-font "IosevkaTermSlab Nerd Font")
+(let ((mono-spaced-font "MintMono Nerd Font")
       (proportionately-spaced-font "Sans"))
   (set-face-attribute 'default nil :family mono-spaced-font :height 140)
   (set-face-attribute 'fixed-pitch nil :family mono-spaced-font :height 1.0)
@@ -59,6 +60,14 @@
 (setq straight-repository-branch "master")
 (require 'straight-x)
 (straight-use-package 'use-package)
+
+;; Org の画像や長い行もピクセル単位で滑らかにスクロールする。
+(use-package ultra-scroll
+  :straight (:host github :repo "jdtsmith/ultra-scroll")
+  :init
+  (setq scroll-conservatively 3)
+  :config
+  (ultra-scroll-mode 1))
 
 (use-package delsel
   :ensure nil
@@ -144,6 +153,7 @@
          ("M-y" . consult-yank-pop)         ;; クリップボード（kill-ring）の履歴から貼り付け
          ("M-g g" . consult-goto-line)      ;; 行指定ジャンプ
          ("M-g i" . consult-imenu)          ;; 関数や見出しへのジャンプ
+         ("C-c f f" . consult-find) ;; find
          ("C-c r" . consult-ripgrep))       ;; ripgrepを使ったプロジェクト内検索（※rgのインストールが必要）
          
   :config
@@ -167,6 +177,14 @@
   ("C-c g p" . consult-ghq-switch-project)
   ("C-c g f" . consult-ghq-find)
   ("C-c g g" . consult-ghq-grep))
+
+;; (use-package fzf
+;;   :ensure t
+;;   :bind
+;;   (("C-c f f" . fzf-find-file)
+;;    ("C-c f g" . fzf-grep)
+;;    ("C-c f b" . fzf-switch-buffer)))
+
 
 ;; (use-package inkpot-theme
 ;;   :straight t
@@ -343,6 +361,12 @@
   (add-to-list 'web-mode-engines-alist '("smarty" . "\\.tpl\\'")))
 
 ;; org
+(custom-set-faces
+ '(org-document-title ((t (:height 1.8 :weight bold))))
+ '(org-level-1 ((t (:height 1.5 :weight bold))))
+ '(org-level-2 ((t (:height 1.3 :weight bold))))
+ '(org-level-3 ((t (:height 1.2 :weight bold))))
+ '(org-level-4 ((t (:height 1.1 :weight bold)))))
 (use-package org
   :straight t
   :bind
@@ -355,6 +379,9 @@
    '((python . t)))
 
   :custom
+  (org-hide-emphasis-markers t)
+  (org-pretty-entities t)
+
   (org-todo-keywords
         '((sequence "TODO(t)" "DOING(i)" "|" "DONE(d)")))  
   (org-directory "~/notes")
@@ -393,6 +420,22 @@
       "* %?\n created_at: %U\n %i"))))
 (put 'narrow-to-region 'disabled nil)
 
+(use-package org-roam
+  :ensure t
+  :custom
+  (org-roam[[id:FB61B71D-4BE1-496B-9C75-A4B8040F8FA9][Nb3Sn]]-directory (file-truename "~/notes/roam/"))
+  (org-roam-node-display-template
+   (concat "${title:*} "
+           (propertize "${tags:10}" 'face 'org-tag)))
+  :bind
+  (("C-c n f" . org-roam-node-find)
+   ("C-c n i" . org-roam-node-insert)
+   ("C-c n c" . org-roam-capture)
+   ("C-c n l" . org-roam-buffer-toggle)
+   ("C-c n g" . org-roam-graph))
+  :config
+  (org-roam-db-autosync-mode))
+
 
 (use-package flyspell
   :hook
@@ -427,6 +470,27 @@
   :config
   (pdf-tools-install))
 
+(use-package ef-themes
+  :straight t
+  :config
+  (load-theme 'ef-eagle)
+  )
+
+(use-package org-modern
+  :straight t
+  :hook
+  (org-mode . org-modern-mode)
+  :custom
+  (org-modern-star 'replace)
+  (org-modern-replace-stars "◉○◆◇✦")
+  (org-modern-list '((?+ . "➤")
+                     (?- . "–")
+                     (?* . "•")))
+  (org-modern-checkbox '((?X . "☑")
+                         (?- . "◩")
+                         (?\s . "☐")))  
+  )
+
 (defun my/rpst-gen-test ()
   "現在のファイルの相対パスを引数にテストを生成し、作成されたファイルを展開する"
   (interactive)
@@ -458,6 +522,35 @@
     (kill-new markdown)
     (message "Converted Org region to Markdown and copied to clipboard.")))
 
+(defun my-org-daily-report-entry (title)
+  "現在のOrg見出しから、TITLEと親見出しの情報を取得する。"
+  (save-excursion
+    (org-back-to-heading t)
+    (let ((id (cons (current-buffer) (point)))
+          (ancestors '()))
+      (while (org-up-heading-safe)
+        (push (cons (current-buffer) (point)) ancestors))
+      (list :id id :ancestors ancestors :title title))))
+
+(defun my-org-daily-report-format-tasks (tasks)
+  "TASKSを親子関係に従ってSlack用の箇条書きへ変換する。"
+  (if (null tasks)
+      "• なし"
+    (let ((selected (make-hash-table :test 'equal)))
+      (dolist (task tasks)
+        (puthash (plist-get task :id) t selected))
+      (mapconcat
+       (lambda (task)
+         (let ((depth 0))
+           (dolist (ancestor (plist-get task :ancestors))
+             (when (gethash ancestor selected)
+               (setq depth (1+ depth))))
+           (concat (make-string (* 2 depth) ?\s)
+                   "• "
+                   (plist-get task :title))))
+       tasks
+       "\n"))))
+
 (defun my-org-daily-report ()
   "Org agenda filesからSlack用の日報を生成してkill-ringへコピーする。"
   (interactive)
@@ -475,26 +568,27 @@
        (let* ((title (org-get-heading t t t t))
               (todo (org-get-todo-state))
               (closed (org-entry-get nil "CLOSED"))
-              (scheduled (org-entry-get nil "SCHEDULED")))
+              (scheduled (org-entry-get nil "SCHEDULED"))
+              (entry (my-org-daily-report-entry title)))
 
          ;; 今日完了したタスク
          (when (and closed
                     (string-match-p today closed))
-           (push title done))
+           (push entry done))
 
          ;; 今日予定されている未完了タスク
          (when (and scheduled
                     (string-match-p today scheduled)
                     todo
                     (not (member todo org-done-keywords)))
-           (push title doing))
+           (push entry doing))
 
          ;; 明日の予定
          (when (and scheduled
                     (string-match-p tomorrow scheduled)
                     todo
                     (not (member todo org-done-keywords)))
-           (push title tomorrow-tasks))))
+           (push entry tomorrow-tasks))))
      t
      'agenda)
 
@@ -503,28 +597,13 @@
             (format "*日報 %s*\n\n" today)
 
             "*完了*\n"
-            (if done
-                (mapconcat
-                 (lambda (x) (concat "• " x))
-                 (reverse done)
-                 "\n")
-              "• なし")
+            (my-org-daily-report-format-tasks (nreverse done))
 
             "\n\n*進行中*\n"
-            (if doing
-                (mapconcat
-                 (lambda (x) (concat "• " x))
-                 (reverse doing)
-                 "\n")
-              "• なし")
+            (my-org-daily-report-format-tasks (nreverse doing))
 
             "\n\n*明日の予定*\n"
-            (if tomorrow-tasks
-                (mapconcat
-                 (lambda (x) (concat "• " x))
-                 (reverse tomorrow-tasks)
-                 "\n")
-              "• なし"))))
+            (my-org-daily-report-format-tasks (nreverse tomorrow-tasks)))))
 
       (kill-new report)
 

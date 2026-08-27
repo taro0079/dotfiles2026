@@ -21,5 +21,5 @@ background-blur-radius = 20
 desktop-notifications = true
 
 # CRT-style post-processing shader
-custom-shader = /Users/awesometaro/.config/ghostty/shaders/retro-terminal.glsl
+custom-shader = shaders/retro-terminal.glsl
 custom-shader-animation = false
