@@ -9,7 +9,7 @@
 (global-set-key (kbd "C-c <down>") 'windmove-down)
 (global-set-key (kbd "C-c <left>") 'windmove-left)
 (global-set-key (kbd "C-c <right>") 'windmove-right)
-;; (load-theme 'tsdh-dark)
+(load-theme 'modus-vivendi t)
 ;; backup file
 (setq my-backup-dir (expand-file-name "~/.emacs.d/backups/"))
 (unless (file-exists-p my-backup-dir)
@@ -353,7 +353,10 @@
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((python . t)))
+
   :custom
+  (org-todo-keywords
+        '((sequence "TODO(t)" "DOING(i)" "|" "DONE(d)")))  
   (org-directory "~/notes")
   (org-refile-targets '((org-agenda-files :maxlevel . 3)))
   ;; inbox.org だけでなく ~/notes 配下の .org を全てアジェンダ対象にする
@@ -383,11 +386,11 @@
   ;; %U は非アクティブなのでアジェンダには出ない → 作成日時は CREATED プロパティへ。
   (org-capture-templates
    '(("t" "Task" entry (file+headline org-default-notes-file "Tasks")
-      "* TODO %?\n SCHEDULED: %t\n :PROPERTIES:\n :CREATED: %U\n :END:\n %a")
+      "* TODO %?\n SCHEDULED: %t\n :PROPERTIES:\n :CREATED: %U\n :END:\n")
      ("d" "Daily Scrum" entry (file+headline org-default-notes-file "Daily Scrum")
       "* Daily Scrum %U\n** 仙石さん\n** 森屋さん\n** 根橋さん\n** 中尾さん\n** 内山さん\n** 森田\n** 全体")
      ("n" "Note" entry (file+headline org-default-notes-file "Notes")
-      "* %?\n created_at: %U\n %i\n %a"))))
+      "* %?\n created_at: %U\n %i"))))
 (put 'narrow-to-region 'disabled nil)
 
 
@@ -454,3 +457,82 @@
          (markdown (org-export-string-as org-text 'md t)))
     (kill-new markdown)
     (message "Converted Org region to Markdown and copied to clipboard.")))
+
+(defun my-org-daily-report ()
+  "Org agenda filesからSlack用の日報を生成してkill-ringへコピーする。"
+  (interactive)
+  (let* ((today (format-time-string "%Y-%m-%d"))
+         (tomorrow
+          (format-time-string
+           "%Y-%m-%d"
+           (time-add (current-time) (days-to-time 1))))
+         (done '())
+         (doing '())
+         (tomorrow-tasks '()))
+
+    (org-map-entries
+     (lambda ()
+       (let* ((title (org-get-heading t t t t))
+              (todo (org-get-todo-state))
+              (closed (org-entry-get nil "CLOSED"))
+              (scheduled (org-entry-get nil "SCHEDULED")))
+
+         ;; 今日完了したタスク
+         (when (and closed
+                    (string-match-p today closed))
+           (push title done))
+
+         ;; 今日予定されている未完了タスク
+         (when (and scheduled
+                    (string-match-p today scheduled)
+                    todo
+                    (not (member todo org-done-keywords)))
+           (push title doing))
+
+         ;; 明日の予定
+         (when (and scheduled
+                    (string-match-p tomorrow scheduled)
+                    todo
+                    (not (member todo org-done-keywords)))
+           (push title tomorrow-tasks))))
+     t
+     'agenda)
+
+    (let ((report
+           (concat
+            (format "*日報 %s*\n\n" today)
+
+            "*完了*\n"
+            (if done
+                (mapconcat
+                 (lambda (x) (concat "• " x))
+                 (reverse done)
+                 "\n")
+              "• なし")
+
+            "\n\n*進行中*\n"
+            (if doing
+                (mapconcat
+                 (lambda (x) (concat "• " x))
+                 (reverse doing)
+                 "\n")
+              "• なし")
+
+            "\n\n*明日の予定*\n"
+            (if tomorrow-tasks
+                (mapconcat
+                 (lambda (x) (concat "• " x))
+                 (reverse tomorrow-tasks)
+                 "\n")
+              "• なし"))))
+
+      (kill-new report)
+
+      (with-current-buffer
+          (get-buffer-create "*Org Daily Report*")
+        (erase-buffer)
+        (insert report)
+        (goto-char (point-min))
+        (display-buffer (current-buffer)))
+
+      (message "Slack用日報をクリップボードにコピーしました。"))))
