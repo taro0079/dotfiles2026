@@ -469,7 +469,13 @@
   :ensure t
   :config
   (pdf-tools-install))
-
+(add-to-list 'load-path "/opt/homebrew/share/emacs/site-lisp/mu/mu4e")
+(use-package mu4e
+  :ensure nil
+  :config
+  (setq mu4e-maildir "~/Maildir")
+  (setq mu4e-update-interval 300)
+  (setq mu4e-get-mail-command "mbsync gmail"))
 (use-package ef-themes
   :straight t
   :config
