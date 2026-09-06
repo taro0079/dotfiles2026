@@ -22,7 +22,7 @@
 (setq-default tab-width 4)
 (global-display-line-numbers-mode t)
 (global-auto-revert-mode 1)
-(let ((mono-spaced-font "MintMono Nerd Font")
+(let ((mono-spaced-font "HackGen Console NF")
       (proportionately-spaced-font "Sans"))
   (set-face-attribute 'default nil :family mono-spaced-font :height 140)
   (set-face-attribute 'fixed-pitch nil :family mono-spaced-font :height 1.0)
@@ -417,7 +417,9 @@
      ("d" "Daily Scrum" entry (file+headline org-default-notes-file "Daily Scrum")
       "* Daily Scrum %U\n** 仙石さん\n** 森屋さん\n** 根橋さん\n** 中尾さん\n** 内山さん\n** 森田\n** 全体")
      ("n" "Note" entry (file+headline org-default-notes-file "Notes")
-      "* %?\n created_at: %U\n %i"))))
+      "* %?\n created_at: %U\n %i")
+     ("m" "Mail" entry (file+headline org-default-notes-file "Mails")
+      "* %:subject\n:PROPERTIES:\n:CREATED: %U\n:END:\nFrom: %:from\nDate: %:date\n%a\n\n%i\n%?"))))
 (put 'narrow-to-region 'disabled nil)
 
 (use-package org-roam
@@ -472,7 +474,12 @@
 (add-to-list 'load-path "/opt/homebrew/share/emacs/site-lisp/mu/mu4e")
 (use-package mu4e
   :ensure nil
+  :bind (:map mu4e-headers-mode-map
+              ("C-c c" . mu4e-org-store-and-capture)
+         :map mu4e-view-mode-map
+              ("C-c c" . mu4e-org-store-and-capture))
   :config
+  (require 'mu4e-org)
   (setq mu4e-maildir "~/Maildir")
   (setq mu4e-update-interval 300)
   (setq mu4e-get-mail-command "mbsync gmail"))
