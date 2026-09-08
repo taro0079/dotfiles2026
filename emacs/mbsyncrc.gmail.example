@@ -1,0 +1,26 @@
+# ~/.mbsyncrc にコピーし、2か所の YOUR_ADDRESS@gmail.com を置換する。
+IMAPAccount gmail
+Host imap.gmail.com
+Port 993
+User YOUR_ADDRESS@gmail.com
+PassCmd "/usr/bin/security find-internet-password -a YOUR_ADDRESS@gmail.com -s smtp.gmail.com -P 587 -w"
+AuthMechs LOGIN
+TLSType IMAPS
+
+IMAPStore gmail-remote
+Account gmail
+
+MaildirStore gmail-local
+Path ~/Maildir/gmail/
+Inbox ~/Maildir/gmail/INBOX
+SubFolders Verbatim
+
+Channel gmail
+Far :gmail-remote:
+Near :gmail-local:
+Patterns "INBOX" "[Gmail]/Drafts" "[Gmail]/Sent Mail" "[Gmail]/All Mail" "[Gmail]/Trash"
+Create Near
+Sync All
+# 初期設定では完全削除しない。移動元の削除を反映するには README を参照。
+Expunge None
+SyncState *

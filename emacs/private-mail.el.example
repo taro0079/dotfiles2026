@@ -1,0 +1,9 @@
+;;; private-mail.el --- Local Gmail identity -*- lexical-binding: t; -*-
+;; ~/.emacs.d/private-mail.el にコピーし、実際のアドレス・名前に置換する。
+;; パスワードはここには書かず、macOS キーチェーンに保存する。
+(setq user-mail-address "YOUR_ADDRESS@gmail.com"
+      user-full-name "YOUR_NAME"
+      smtpmail-smtp-user user-mail-address)
+
+;; mbsync -l gmail の結果が日本語名の場合は、.mbsyncrc の Patterns と
+;; .emacs の mu4e-*-folder / mu4e-maildir-shortcuts も同じ名前に合わせる。

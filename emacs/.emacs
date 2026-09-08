@@ -22,7 +22,7 @@
 (setq-default tab-width 4)
 (global-display-line-numbers-mode t)
 (global-auto-revert-mode 1)
-(let ((mono-spaced-font "HackGen Console NF")
+(let ((mono-spaced-font "Moralerspace Neon NF")
       (proportionately-spaced-font "Sans"))
   (set-face-attribute 'default nil :family mono-spaced-font :height 140)
   (set-face-attribute 'fixed-pitch nil :family mono-spaced-font :height 1.0)
@@ -148,7 +148,7 @@
 (use-package color-theme-modern
   :ensure t
   :config
-;;   (load-theme 'retro-green)
+;;   (load-theme 'ef-tritanopia-light)
   )
 (use-package marginalia
   :straight t
@@ -345,6 +345,7 @@
 (use-package org-download
   :ensure t
   :after org
+  :hook (org-mode . org-download-enable)
   :config
   (setq org-download-method 'directory)
   (setq org-download-image-dir "./images")
@@ -435,7 +436,8 @@
 (use-package org-roam
   :ensure t
   :custom
-  (org-roam[[id:FB61B71D-4BE1-496B-9C75-A4B8040F8FA9][Nb3Sn]]-directory (file-truename "~/notes/roam/"))
+  (org-roam-directory (file-truename "~/notes/roam/"))
+  (org-roam-dailies-directory "daily/")
   (org-roam-node-display-template
    (concat "${title:*} "
            (propertize "${tags:10}" 'face 'org-tag)))
@@ -444,8 +446,32 @@
    ("C-c n i" . org-roam-node-insert)
    ("C-c n c" . org-roam-capture)
    ("C-c n l" . org-roam-buffer-toggle)
-   ("C-c n g" . org-roam-graph))
+   ("C-c n g" . org-roam-graph)
+   ("C-c n t" . org-roam-dailies-goto-today)
+   ("C-c n d" . org-roam-dailies-capture-today)
+   ("C-c n D" . org-roam-dailies-goto-date))
   :config
+  (setq org-roam-capture-templates
+        '(("d" "default" plain "%?"
+           :target
+           (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                      ":PROPERTIES:\n:CREATED: %U\n:TYPE: %^{Type|idea|literature|project}\n:STATUS: draft\n:END:\n#+title: ${title}\n\n")
+           :unnarrowed t)))
+  ;; Daily Note 内の TODO も Org Agenda に表示する。
+  (add-to-list 'org-agenda-files
+               (expand-file-name org-roam-dailies-directory
+                                 org-roam-directory))
+  (setq org-roam-dailies-capture-templates
+        '(("d" "daily" entry
+           "* %<%H:%M> %?\n:PROPERTIES:\n:CREATED: %U\n:TYPE: idea\n:STATUS: draft\n:END:\n"
+           :target
+           (file+head "%<%Y-%m-%d>.org"
+                      "#+title: %<%Y-%m-%d>\n\n"))
+          ("t" "task" entry
+           "* TODO %?\nSCHEDULED: %t\n:PROPERTIES:\n:CREATED: %U\n:TYPE: task\n:END:\n"
+           :target
+           (file+head "%<%Y-%m-%d>.org"
+                      "#+title: %<%Y-%m-%d>\n\n"))))
   (org-roam-db-autosync-mode))
 
 
@@ -453,8 +479,9 @@
   :hook
   (php-ts-mode . flyspell-mode)
   (ruby-ts-mode . flyspell-mode))
-(use-package auctex
-  :ensure t
+(use-package tex
+  :straight auctex
+  :ensure nil
   :defer t
   :hook
   (LaTeX-mode . turn-on-reftex)
@@ -464,19 +491,13 @@
   (setq TeX-auto-save t)
   (setq TeX-parse-self t)
   (setq TeX-PDF-mode t)
+  (setq-default TeX-engine 'luatex)
   ;; pdf viewer settings
   (setq TeX-view-program-selection
         '((output-pdf "PDF Tools")))
   (setq TeX-view-program-list
         '(("PDF Tools" TeX-pdf-tools-sync-view)))
-  (add-to-list 'TeX-command-list
-               '("LuaLaTeX"
-                 "lualatex -synctex=1 -interaction=nonstopmode %s"
-                 TeX-run-TeX
-                 nil
-                 t
-                 :help "Run LuaLaTeX"))
-  (setq TeX-command-default "LuaLaTeX"))
+  (setq-default TeX-command-default "LaTeX"))
 (use-package pdf-tools
   :ensure t
   :config
@@ -484,19 +505,51 @@
 (add-to-list 'load-path "/opt/homebrew/share/emacs/site-lisp/mu/mu4e")
 (use-package mu4e
   :ensure nil
+  :straight nil
+  :commands mu4e
   :bind (:map mu4e-headers-mode-map
               ("C-c c" . mu4e-org-store-and-capture)
          :map mu4e-view-mode-map
               ("C-c c" . mu4e-org-store-and-capture))
   :config
   (require 'mu4e-org)
-  (setq mu4e-maildir "~/Maildir")
-  (setq mu4e-update-interval 300)
-  (setq mu4e-get-mail-command "mbsync gmail"))
+  (require 'smtpmail)
+  (require 'auth-source)
+  ;; GUI Emacs の PATH に Homebrew がなくても実行できるようにする。
+  (setq mu4e-mu-binary (or (executable-find "mu") "/opt/homebrew/bin/mu")
+        mu4e-get-mail-command
+        (concat (shell-quote-argument
+                 (or (executable-find "mbsync") "/opt/homebrew/bin/mbsync"))
+                " gmail")
+        mu4e-update-interval 300
+        ;; mbsync の UID と移動先のファイル名が衝突するのを防ぐ。
+        mu4e-change-filenames-when-moving t
+        mu4e-drafts-folder "/gmail/[Gmail]/Drafts"
+        mu4e-sent-folder "/gmail/[Gmail]/Sent Mail"
+        mu4e-trash-folder "/gmail/[Gmail]/Trash"
+        mu4e-refile-folder "/gmail/[Gmail]/All Mail"
+        ;; Gmail が送信済みメールを保存するので、二重保存しない。
+        mu4e-sent-messages-behavior 'delete
+        mu4e-headers-skip-duplicates t
+        mu4e-maildir-shortcuts
+        '((:maildir "/gmail/INBOX" :key ?i)
+          (:maildir "/gmail/[Gmail]/Sent Mail" :key ?s)
+          (:maildir "/gmail/[Gmail]/Drafts" :key ?d)
+          (:maildir "/gmail/[Gmail]/All Mail" :key ?a)
+          (:maildir "/gmail/[Gmail]/Trash" :key ?t))
+        message-send-mail-function #'smtpmail-send-it
+        smtpmail-smtp-server "smtp.gmail.com"
+        smtpmail-smtp-service 587
+        smtpmail-stream-type 'starttls)
+  ;; SMTP と mbsync は同じインターネットパスワードを参照する。
+  (when (eq system-type 'darwin)
+    (add-to-list 'auth-sources 'macos-keychain-internet))
+  ;; アドレスや Gmail の言語によるフォルダー名の差はローカル設定で上書き。
+  (load (expand-file-name "private-mail.el" user-emacs-directory) t))
 (use-package ef-themes
   :straight t
   :config
-  (load-theme 'ef-eagle)
+  (load-theme 'ef-tritanopia-light)
   )
 
 (use-package org-modern
