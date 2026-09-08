@@ -61,6 +61,16 @@
 (require 'straight-x)
 (straight-use-package 'use-package)
 
+;; Kibela: 認証情報は ~/.emacs.d/private-kibela.el に保存する。
+;; 設定例は emacs/private-kibela.el.example を参照。
+(use-package kibela
+  :straight (:type git :host github :repo "mugijiru/emacs-kibela")
+  :commands (kibela-switch-team
+             kibela-group-notes
+             kibela-recent-browsing-notes)
+  :init
+  (load (expand-file-name "private-kibela.el" user-emacs-directory) t))
+
 ;; Org の画像や長い行もピクセル単位で滑らかにスクロールする。
 (use-package ultra-scroll
   :straight (:host github :repo "jdtsmith/ultra-scroll")

@@ -1,0 +1,11 @@
+;;; private-kibela.el --- Local Kibela credentials -*- lexical-binding: t; -*-
+
+;; このファイルを ~/.emacs.d/private-kibela.el にコピーして値を変更する。
+;; API トークンを記入したファイルは Git に追加しないこと。
+;; NAME は任意の識別名、TEAM は https://TEAM.kibe.la の TEAM 部分。
+(setq kibela-auth-list
+      '(("Work" "YOUR-TEAM" "YOUR-API-TOKEN")))
+
+;; Emacs を再起動して M-x kibela-switch-team で Work を選び、
+;; M-x kibela-group-notes で記事一覧を開く。
+;; 初回にデフォルトグループ未取得のメッセージが出たら、もう一度実行する。
