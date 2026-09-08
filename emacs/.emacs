@@ -495,6 +495,12 @@
   (org-mode . org-modern-mode)
   :custom
   (org-modern-star 'replace)
+  (org-modern-hide-stars 'leading)  
+  (org-modern-todo t)
+  (org-modern-timestamp t)
+  (org-modern-priority t)
+  (org-modern-tag t)  
+  (org-modern-block-fringe 4)
   (org-modern-replace-stars "◉○◆◇✦")
   (org-modern-list '((?+ . "➤")
                      (?- . "–")
