@@ -1,5 +1,8 @@
 return {
   "folke/flash.nvim",
+  -- Neovim 0.13-dev-2670 still uses the legacy search globals.
+  -- Remove this pin after upgrading Neovim to a build with SearchState.
+  commit = "b6346946d10d07998efee029fb0f7a593806d0cd",
   event = "VeryLazy",
   ---@type Flash.Config
   opts = {},
