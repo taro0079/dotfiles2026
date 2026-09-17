@@ -19,5 +19,3 @@ copy-on-select = clipboard
 # background-blur = true
 background-blur-radius = 20
 desktop-notifications = true
-
-# CRT-style post-processing shader
