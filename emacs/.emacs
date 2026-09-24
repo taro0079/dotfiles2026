@@ -217,6 +217,14 @@
 (use-package jsonrpc
   :straight t)
 
+(use-package citar
+    :straight t
+  :custom
+  (org-cite-global-bibliography
+   '("~/notes/roam/references.bib"))
+  (citar-bibliography
+   '("~/notes/roam/references.bib")))  
+
 ;; サーバープログラムの設定 (Node 20とメモリ拡張の安全設定は維持)
 (use-package eglot
   :straight t
@@ -549,7 +557,7 @@
 (use-package ef-themes
   :straight t
   :config
-  (load-theme 'ef-tritanopia-light)
+  (load-theme 'ef-tritanopia-dark)
   )
 
 (use-package org-modern
