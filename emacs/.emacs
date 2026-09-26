@@ -465,21 +465,22 @@
            (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
                       ":PROPERTIES:\n:CREATED: %U\n:TYPE: %^{Type|idea|literature|project}\n:STATUS: draft\n:END:\n#+title: ${title}\n\n")
            :unnarrowed t)))
-  ;; Daily Note 内の TODO も Org Agenda に表示する。
-  (add-to-list 'org-agenda-files
-               (expand-file-name org-roam-dailies-directory
-                                 org-roam-directory))
-  (setq org-roam-dailies-capture-templates
-        '(("d" "daily" entry
-           "* %<%H:%M> %?\n:PROPERTIES:\n:CREATED: %U\n:TYPE: idea\n:STATUS: draft\n:END:\n"
-           :target
-           (file+head "%<%Y-%m-%d>.org"
-                      "#+title: %<%Y-%m-%d>\n\n"))
-          ("t" "task" entry
-           "* TODO %?\nSCHEDULED: %t\n:PROPERTIES:\n:CREATED: %U\n:TYPE: task\n:END:\n"
-           :target
-           (file+head "%<%Y-%m-%d>.org"
-                      "#+title: %<%Y-%m-%d>\n\n"))))
+  (with-eval-after-load 'org-roam-dailies
+    ;; Daily Note 内の TODO も Org Agenda に表示する。
+    (add-to-list 'org-agenda-files
+                 (expand-file-name org-roam-dailies-directory
+                                   org-roam-directory))
+    (setq org-roam-dailies-capture-templates
+          '(("d" "daily" entry
+             "* %<%H:%M> %?\n:PROPERTIES:\n:CREATED: %U\n:TYPE: idea\n:STATUS: draft\n:END:\n"
+             :target
+             (file+head "%<%Y-%m-%d>.org"
+                        "#+title: %<%Y-%m-%d>\n\n"))
+            ("t" "task" entry
+             "* TODO %?\nSCHEDULED: %t\n:PROPERTIES:\n:CREATED: %U\n:TYPE: task\n:END:\n"
+             :target
+             (file+head "%<%Y-%m-%d>.org"
+                        "#+title: %<%Y-%m-%d>\n\n")))))
   (org-roam-db-autosync-mode))
 
 
