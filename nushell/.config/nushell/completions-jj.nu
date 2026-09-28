@@ -2248,6 +2248,15 @@ module completions {
     [ "always" "never" "debug" "auto" ]
   }
 
+  # Complete local bookmarks without snapshotting the working copy.
+  def "nu-complete jj new bookmarks" [] {
+    let result = (^jj --ignore-working-copy --no-pager bookmark list --template 'name ++ "\n"' | complete)
+    if $result.exit_code != 0 {
+      return []
+    }
+    $result.stdout | lines | where {|name| $name != "" } | uniq
+  }
+
   # Create a new, empty change and (by default) edit it in the working copy
   export extern "jj new" [
     -o: string
@@ -2271,7 +2280,7 @@ module completions {
     --config: string          # Additional configuration options (can be repeated)
     --config-file: path       # Additional configuration files (can be repeated)
     --help(-h)                # Print help (see more with '--help')
-    ...revisions_pos: string  # Parent(s) of the new change [default: @] [aliases: -o, -r]
+    ...revisions_pos: string@"nu-complete jj new bookmarks" # Parent(s) of the new change [default: @] [aliases: -o, -r]
   ]
 
   def "nu-complete jj next color" [] {

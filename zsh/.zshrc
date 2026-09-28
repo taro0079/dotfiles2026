@@ -46,7 +46,7 @@ export EDITOR="nvim"
 export XDG_CONFIG_HOME="$HOME/.config"
 
 # jj
-jjn() {
+fjjn() {
     jj new $(jj bookmark list --all | fzf | awk '{print $2}')
 }
 
@@ -79,7 +79,9 @@ export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME="robbyrussell"
 plugins=(
     git
+    jj
     zsh-autosuggestions
+    zsh-syntax-highlighting
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -95,3 +97,15 @@ export PATH="$ESPRESSO_ROOT/bin:$PATH"
 export OMP_NUM_THREADS=1
 export PATH="/Users/taro_morita/.local/bin:$PATH"
 export PATH="$HOME/bin:$PATH"
+
+_my_theme_vcs_info() {
+  local jj_info
+  # jj リポジトリ内かどうかを判定して情報を取得
+  if jj_info=$(jj_prompt_template 'separate(" ", self.change_id().shortest(3), self.bookmarks())' 2>/dev/null) && [[ -n "$jj_info" ]]; then
+    echo "$jj_info"
+  else
+    git_prompt_info
+  fi
+}
+
+PROMPT='%F{blue}%~%f %F{magenta}[$(_my_theme_vcs_info)]%f $ '

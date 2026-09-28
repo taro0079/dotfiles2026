@@ -158,8 +158,10 @@
   :ensure t
   ;; よく使う標準コマンドを Consult の便利なコマンドに置き換える
   :bind (("C-x b" . consult-buffer)         ;; バッファ切り替え（最近使ったファイルなども含む）
+         ("C-x k" . my/consult-kill-buffer) ;; プレビューしながら削除するバッファを選択
          ("C-x 4 b" . consult-buffer-other-window)
          ("C-c l" . consult-line)             ;; 現在のバッファ内を検索（プレビュー付き）
+         ("C-c t" . consult-theme)         ;; プレビューしながらテーマを選択
          ("M-y" . consult-yank-pop)         ;; クリップボード（kill-ring）の履歴から貼り付け
          ("M-g g" . consult-goto-line)      ;; 行指定ジャンプ
          ("M-g i" . consult-imenu)          ;; 関数や見出しへのジャンプ
@@ -167,7 +169,27 @@
          ("C-c r" . consult-ripgrep))       ;; ripgrepを使ったプロジェクト内検索（※rgのインストールが必要）
          
   :config
-  ;; Consultのプレビューを遅延させる（動作を軽くするため）
+  ;; テーマは候補移動が落ち着いてからプレビューする。
+  (consult-customize consult-theme :preview-key '(:debounce 0.2 any))
+  (defun my/consult-kill-buffer ()
+    "プレビューしながらバッファを選び、確定後に削除する。"
+    (interactive)
+    ;; preview のみを使い、確定時にも元の表示へ戻してから削除する。
+    ;; buffer-state は確定時にバッファを切り替えるため、ここでは使わない。
+    (let* ((name (consult--read
+                  (consult--buffer-query :filter nil :as #'buffer-name)
+                  :prompt "Kill buffer: "
+                  :category 'buffer
+                  :history 'buffer-name-history
+                  :default (buffer-name)
+                  :require-match t
+                  :sort nil
+                  :state (consult--buffer-preview)))
+           (buffer (get-buffer name)))
+      ;; 選択中に対象が消えても、現在のバッファを誤って削除しない。
+      (when (buffer-live-p buffer)
+        (kill-buffer buffer))))
+  ;; 候補を移動するたびにプレビューする。
   (setq consult-preview-key 'any))
 
 ;; terminal emulator
