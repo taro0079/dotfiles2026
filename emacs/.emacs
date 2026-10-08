@@ -10,7 +10,7 @@
 (global-set-key (kbd "C-c <down>") 'windmove-down)
 (global-set-key (kbd "C-c <left>") 'windmove-left)
 (global-set-key (kbd "C-c <right>") 'windmove-right)
-;; (load-theme 'modus-vivendi t)
+;; (load-theme 'ef-day t)
 ;; backup file
 (setq my-backup-dir (expand-file-name "~/.emacs.d/backups/"))
 (unless (file-exists-p my-backup-dir)
@@ -580,7 +580,7 @@
 (use-package ef-themes
   :straight t
   :config
-  (load-theme 'ef-tritanopia-dark)
+  (load-theme 'ef-day)
   )
 
 (use-package org-modern

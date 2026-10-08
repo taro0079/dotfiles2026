@@ -79,9 +79,12 @@ export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME="robbyrussell"
 plugins=(
     git
+    docker
+    docker-compose
     jj
     zsh-autosuggestions
     zsh-syntax-highlighting
+    web-search
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -108,4 +111,6 @@ _my_theme_vcs_info() {
   fi
 }
 
-PROMPT='%F{blue}%~%f %F{magenta}[$(_my_theme_vcs_info)]%f $ '
+PROMPT='%F{green}%n@%m%f:%F{blue}%2~%f %F{magenta}[$(_my_theme_vcs_info)]%f $ '
+
+eval $(thefuck --alias)
