@@ -243,9 +243,9 @@
     :straight t
   :custom
   (org-cite-global-bibliography
-   '("~/notes/roam/references.bib"))
+   '("~/memos/roam/references.bib"))
   (citar-bibliography
-   '("~/notes/roam/references.bib")))  
+   '("~/memos/roam/references.bib")))  
 
 ;; サーバープログラムの設定 (Node 20とメモリ拡張の安全設定は維持)
 (use-package eglot
@@ -413,7 +413,7 @@
   :bind
   (("C-c c" . org-capture)
    ("C-c a" . org-agenda)
-   ("C-c i" . (lambda () (interactive) (find-file "~/notes/inbox.org"))))
+   ("C-c i" . (lambda () (interactive) (find-file "~/memos/inbox.org"))))
   :config
   (org-babel-do-load-languages
    'org-babel-load-languages
@@ -425,10 +425,10 @@
 
   (org-todo-keywords
         '((sequence "TODO(t)" "DOING(i)" "|" "DONE(d)")))  
-  (org-directory "~/notes")
+  (org-directory "~/memos")
   (org-refile-targets '((org-agenda-files :maxlevel . 3)))
-  ;; inbox.org だけでなく ~/notes 配下の .org を全てアジェンダ対象にする
-  (org-agenda-files '("~/notes" "~/notes/inbox.org" "~/notes/rpst.org" "~/notes/research.org"))
+  ;; inbox.org だけでなく ~/memos 配下の .org を全てアジェンダ対象にする
+  (org-agenda-files '("~/memos" "~/memos/inbox.org" "~/memos/rpst.org" "~/memos/research.org"))
   (org-default-notes-file (expand-file-name "inbox.org" org-directory))
 
   ;; --- weekly summary の前提 ---
@@ -466,7 +466,7 @@
 (use-package org-roam
   :ensure t
   :custom
-  (org-roam-directory (file-truename "~/notes/roam/"))
+  (org-roam-directory (file-truename "~/memos/roam/"))
   (org-roam-dailies-directory "daily/")
   (org-roam-node-display-template
    (concat "${title:*} "
