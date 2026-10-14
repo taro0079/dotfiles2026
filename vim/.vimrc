@@ -122,7 +122,7 @@ syntax enable
 filetype plugin on
 set background=dark
 set termguicolors
-colorscheme industry
+colorscheme gruvbox
 
 
 " list settings ---------------------- {{{1

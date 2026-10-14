@@ -9,7 +9,7 @@ compile = false
 baked_registry = false
 
 [tools]
-node = "latest"
+node = "24.14.1"
 "npm:@biomejs/biome" = "2.4.4"
 "npm:@mermaid-js/mermaid-cli" = "11.4.0"
 "npm:hunkdiff" = "latest"
