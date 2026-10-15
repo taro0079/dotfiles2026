@@ -13,6 +13,7 @@ export PATH="/usr/local/texlive/2024/bin/universal-darwin:$PATH"
 alias E='open /Applications/Emacs.app'
 alias fghq='cd $(ghq list -p | fzf)'
 alias fssh='fuzzy-ssh-selector.sh'
+alias ls='exa -la'
 . "$HOME/.cargo/env"
 
 # bun
@@ -128,5 +129,9 @@ source "$THEFUCK_CACHE"
 
 # Activate mise after other PATH modifications so project tools take precedence.
 eval "$("$HOME/.local/bin/mise" activate zsh)"
+alias le='exa -la'
+
 # zprof
 # パフォーマンス計測用↑
+
+
