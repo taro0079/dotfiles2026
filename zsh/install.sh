@@ -6,3 +6,14 @@ git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosugges
 # zsh-syntaxhighlighting
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.zsh/zsh-syntax-highlighting
 
+mkdir -p ~/.cache/zsh
+printf 'This is\nTaro Morita\n' \
+    | figlet -f roman -w 200 \
+    | lolcat -f \
+    > ~/.cache/zsh/banner
+
+mkdir -p ~/.cache/zsh
+if command -v thefuck &>/dev/null; then
+    thefuck --alias > ~/.cache/zsh/thefuck.zsh
+fi
+

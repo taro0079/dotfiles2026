@@ -750,8 +750,7 @@ let g:db_ui_save_location = '~/.vim/dadbod-ui'
 autocmd FileType sql setlocal omnifunc=vim_dadbod_completion#omni
 autocmd User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#omni#get_source_options({
 \ 'name': 'omni',
-\ 'allowlist': ['*'],
-\ 'blocklist': ['c', 'cpp', 'html'],
+\ 'allowlist': ['sql'],
 \ 'completor': function('asyncomplete#sources#omni#completor'),
 \ 'config': {
 \ },

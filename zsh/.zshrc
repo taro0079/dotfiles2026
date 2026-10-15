@@ -1,3 +1,8 @@
+# パフォーマンス計測用↓
+# zmodload zsh/zprof
+if [[ -f "$HOME/.cache/zsh/banner" ]]; then
+  print -r -- "$(<"$HOME/.cache/zsh/banner")"
+fi
 eval "$(zoxide init zsh)"
 export PATH="$HOME/.composer/vendor/bin:$PATH"
 export PATH="/opt/homebrew/bin:$PATH"
@@ -51,19 +56,16 @@ fjjn() {
 }
 
 
+typeset -U fpath
 # completions
 fpath=(
   "$HOME/.zsh/completion"
-  ~/.zsh/completion
   /opt/homebrew/share/zsh-completions
   /opt/homebrew/share/zsh/site-functions
   /opt/homebrew/share/zsh/functions
   $fpath
 )
-autoload -Uz compinit && compinit -i
 
-# bun completions (must be after compinit because it uses compdef)
-[ -s "/Users/taro_morita/.bun/_bun" ] && source "/Users/taro_morita/.bun/_bun"
 
 bindkey -e
 
@@ -88,12 +90,12 @@ plugins=(
 )
 
 source $ZSH/oh-my-zsh.sh
+#
+# bun completions (must be after compinit because it uses compdef)
+[ -s "/Users/taro_morita/.bun/_bun" ] && source "/Users/taro_morita/.bun/_bun"
 
 # rpst-planning-installer
 export PATH="${HOME}/.local/bin:${PATH}"
-eval "$("$HOME/.local/bin/mise" activate zsh)"
-# Homebrew
-eval "$(/opt/homebrew/bin/brew shellenv)"
 eval "$(direnv hook zsh)"
 export ESPRESSO_ROOT="$HOME/materiapps/espresso/espresso-7.3-1"
 export PATH="$ESPRESSO_ROOT/bin:$PATH"
@@ -113,4 +115,18 @@ _my_theme_vcs_info() {
 
 PROMPT='%F{green}%n@%m%f:%F{blue}%2~%f %F{magenta}[$(_my_theme_vcs_info)]%f $ '
 
-eval $(thefuck --alias)
+# Cache the fuck
+THEFUCK_CACHE="$HOME/.cache/zsh/thefuck.zsh"
+
+if [[ ! -s "$THEFUCK_CACHE" ]]; then
+  mkdir -p "${THEFUCK_CACHE:h}"
+  thefuck --alias > "$THEFUCK_CACHE"
+fi
+
+source "$THEFUCK_CACHE"
+
+
+# Activate mise after other PATH modifications so project tools take precedence.
+eval "$("$HOME/.local/bin/mise" activate zsh)"
+# zprof
+# パフォーマンス計測用↑

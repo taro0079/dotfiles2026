@@ -9,10 +9,12 @@ compile = false
 baked_registry = false
 
 [tools]
-node = "24.14.1"
+node = "latest"
 "npm:@biomejs/biome" = "2.4.4"
+"npm:@google/clasp" = "3.4.1"
 "npm:@mermaid-js/mermaid-cli" = "11.4.0"
 "npm:hunkdiff" = "latest"
+"npm:intelephense" = "1.18.5"
 php = "8.3"
 pnpm = "latest"
 ruby = "4.0.2"
