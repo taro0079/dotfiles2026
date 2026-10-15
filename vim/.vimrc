@@ -97,13 +97,14 @@ Plug 'lifepillar/vim-solarized8'
 Plug 'thinca/vim-quickrun'
 Plug 'easymotion/vim-easymotion'
 Plug 'morhetz/gruvbox'
-" Plug 'hrsh7th/vim-vsnip'
-" Plug 'hrsh7th/vim-vsnip-integ'
+Plug 'nordtheme/vim'
+
 if has('python3')
     Plug 'SirVer/ultisnips'
     Plug 'honza/vim-snippets'
     Plug 'prabirshrestha/asyncomplete-ultisnips.vim'
 endif
+
 Plug 'ghifarit53/tokyonight-vim'
 Plug 'aerosol/dumbotron.vim'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
@@ -122,8 +123,7 @@ syntax enable
 filetype plugin on
 set background=dark
 set termguicolors
-colorscheme gruvbox
-
+colorscheme nord
 
 " list settings ---------------------- {{{1
 nnoremap <leader>lt :set list!<CR>
@@ -488,239 +488,6 @@ function! s:ToRemote(local_path, remote_path, use_mkpath) abort
         echo 'File is not inside the project directory'
     endif
 endfunction
-
-" 標準出力のコールバック
-function! s:OnStdout(channel, msg) abort
-    let msg = trim(a:msg)
-    if msg !=# ''
-        echom 'Message: ' . msg
-    endif
-endfunction
-
-" 標準エラー出力のコールバック
-function! s:OnStderr(channel, msg) abort
-    let err = trim(a:msg)
-    if err !=# ''
-        echohl ErrorMsg
-        echom 'Rsync Error: ' . err
-        echohl None
-    endif
-endfunction
-
-" 終了時のコールバック
-function! s:OnExit(job, code) abort
-    if a:code == 0
-        echohl MoreMsg
-        echom 'File transferred successfully'
-        echohl None
-    else
-        echohl ErrorMsg
-        echom 'Error: ' . a:code
-        echohl None
-    endif
-endfunction
-
-" rpst-v2 プロジェクト用の転送
-function! RpstV2Transport() abort
-    let local_project_path = '~/ghq/rpst-v2/'
-    let remote_project_path = 'taro_morita@rpst-api:/var/lib/nfs-devel7-volume/dev-tmorita-rpst/var_www/rpst-v2/dev/'
-    call s:ToRemote(local_project_path, remote_project_path, 0)
-endfunction
-"
-" rpst プロジェクト用の転送
-function! RpstTransport() abort
-    let local_project_path = '~/ghq/rpst/'
-    let remote_project_path = 'taro_morita@dev-tmorita:/var/www/precs/dev_tmorita/'
-    call s:ToRemote(local_project_path, remote_project_path, 0)
-endfunction
-
-" rpst-api プロジェクト用の転送
-function! RpstApiTransport() abort
-    let local_project_path = '~/ghq/rpst-api/'
-    let remote_project_path = 'taro_morita@rpst-api:/var/lib/rpst-api-docker/'
-    call s:ToRemote(local_project_path, remote_project_path, 0)
-endfunction
-
-" コマンドを登録
-command! TransportV2 call RpstV2Transport()
-command! TransportRpstApi call RpstApiTransport()
-command! TransportRpst call RpstTransport()
-" リモートでPHPUnitを実行するユーティリティ
-
-augroup RpstV2AutoTransport
-    autocmd!
-    " ~/ghq/rpst-v2/ 配下のファイルが保存されたら実行する
-    autocmd BufWritePost ~/ghq/rpst-v2/* call RpstV2Transport()
-augroup END
-
-augroup RpstAutoTransport
-    autocmd!
-    " ~/ghq/rpst/ 配下のファイルが保存されたら実行する
-    autocmd BufWritePost ~/ghq/rpst/* call RpstTransport()
-augroup END
-
-" デフォルト設定
-let s:default_config = {
-    \ 'remote_host': 'dev-tmorita',
-    \ 'user': 'taro_morita',
-    \ 'base_path': '/var/www/rpst-v2/dev',
-    \ 'phpunit_config': '/var/www/rpst-v2/dev/tests/app/phpunit/v9/phpunit.xml.dist',
-    \ 'local_base_path': '~/ghq/rpst-v2/'
-    \ }
-
-" 設定を取得
-function! s:get_config() abort
-    return exists('g:rpst_phpunit_config')
-                \ ? g:rpst_phpunit_config
-                \ : s:default_config
-endfunction
-
-" ローカルパスからリモートパスへの相対パスを取得
-function! s:get_relative_path(local_base) abort
-    let file_path = expand('%:p')
-    let local_base_expanded = expand(a:local_base)
-
-    " パスがプロジェクト内にあるか確認
-    if file_path !~# '^' . escape(local_base_expanded, '/')
-        echohl ErrorMsg
-        echo 'File is not in the project directory: ' . a:local_base
-        echohl None
-        return ''
-    endif
-
-    " 相対パスを取得
-    let relative_path = substitute(file_path, '^' . escape(local_base_expanded, '/'), '', '')
-    " 先頭のスラッシュを削除
-    let relative_path = substitute(relative_path, '^/', '', '')
-
-    return relative_path
-endfunction
-
-" リモートでPHPUnitを実行
-function! RpstPhpunitRun(...) abort
-    let cfg = s:get_config()
-
-    " ローカルのプロジェクトベースパスから相対パスを取得
-    let relative_path = s:get_relative_path(cfg.local_base_path)
-    if empty(relative_path)
-        return
-    endif
-
-    " リモートの完全パスを構築
-    let test_target_path = printf('%s/%s', cfg.base_path, relative_path)
-
-    " PHPUnitコマンドを構築
-    let phpunit_cmd = printf('php %s/vendor/bin/phpunit -c %s %s',
-                \ cfg.base_path,
-                \ cfg.phpunit_config,
-                \ test_target_path)
-
-    " SSHコマンド全体を構築
-    let full_cmd = printf("ssh %s@%s '%s'",
-                \ cfg.user,
-                \ cfg.remote_host,
-                \ phpunit_cmd)
-
-    " デバッグ情報を表示
-    echo '=== Debug Information ==='
-    echo 'Local file: ' . expand('%:p')
-    echo 'Relative path: ' . relative_path
-    echo 'Remote target: ' . test_target_path
-    echo 'PHPUnit command: ' . phpunit_cmd
-    echo 'Full SSH command: ' . full_cmd
-    echo '========================='
-
-    " messagesに保存
-    echom '=== RpstPhpunit Command ==='
-    echom full_cmd
-
-    " 縦分割してターミナルで実行
-    execute 'terminal ++shell ' . full_cmd
-endfunction
-
-" コマンドを表示するだけ（実行しない）
-function! RpstPhpunitShowCommand() abort
-    let cfg = s:get_config()
-
-    let relative_path = s:get_relative_path(cfg.local_base_path)
-    if empty(relative_path)
-        return
-    endif
-
-    let test_target_path = printf('%s/%s', cfg.base_path, relative_path)
-    let phpunit_cmd = printf('php %s/vendor/bin/phpunit -c %s %s',
-                \ cfg.base_path,
-                \ cfg.phpunit_config,
-                \ test_target_path)
-    let full_cmd = printf("ssh %s@%s '%s'",
-                \ cfg.user,
-                \ cfg.remote_host,
-                \ phpunit_cmd)
-
-    " コマンドをクリップボードにコピー
-    let @+ = full_cmd
-    let @" = full_cmd
-
-    echo '=== Generated Command ==='
-    echo full_cmd
-    echo ''
-    echo 'Command copied to clipboard and default register'
-    echo 'You can paste it with: p (in normal mode) or Ctrl+V (in terminal)'
-endfunction
-
-" リモートでファイルが存在するか確認
-function! RpstPhpunitCheck() abort
-    let cfg = s:get_config()
-
-    let relative_path = s:get_relative_path(cfg.local_base_path)
-    if empty(relative_path)
-        return
-    endif
-
-    let test_target_path = printf('%s/%s', cfg.base_path, relative_path)
-
-    " ファイル存在確認コマンド
-    let check_cmd = printf("ssh %s@%s 'test -f %s && echo EXISTS || echo NOT_FOUND'",
-                \ cfg.user,
-                \ cfg.remote_host,
-                \ shellescape(test_target_path))
-
-    echo 'Checking: ' . test_target_path
-    let result = system(check_cmd)
-    echo 'Result: ' . result
-
-    if result =~# 'EXISTS'
-        echohl MoreMsg
-        echo 'File exists on remote server!'
-        echohl None
-    else
-        echohl ErrorMsg
-        echo 'File NOT FOUND on remote server!'
-        echohl None
-
-        " ファイル名で検索
-        echo 'Searching for file...'
-        let filename = expand('%:t')
-        let find_cmd = printf("ssh %s@%s 'find %s -name %s'",
-                    \ cfg.user,
-                    \ cfg.remote_host,
-                    \ cfg.base_path,
-                    \ shellescape(filename))
-        let found = system(find_cmd)
-        if !empty(found)
-            echo 'Found at:'
-            echo found
-        endif
-    endif
-endfunction
-
-" コマンドを登録
-command! RpstPhpunit call RpstPhpunitRun()
-command! RpstPhpunitShow call RpstPhpunitShowCommand()
-command! RpstPhpunitCheck call RpstPhpunitCheck()
-
-" ログを表示
-command! RpstPhpunitLog messages
 
 " fzf config --- {{1
 let g:fzf_vim = {}
