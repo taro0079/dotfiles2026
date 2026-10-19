@@ -61,6 +61,7 @@ Plug 'vim-denops/denops.vim'
 Plug 'ojroques/vim-oscyank'
 Plug 'wolverian/minimal',
 Plug 'tpope/vim-dadbod'
+Plug 'lervag/vimtex'
 Plug 'kristijanhusak/vim-dadbod-ui'
 Plug 'kristijanhusak/vim-dadbod-completion' "Optional
 Plug 'junegunn/vim-easy-align'
