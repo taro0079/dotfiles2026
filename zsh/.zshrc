@@ -114,7 +114,7 @@ _my_theme_vcs_info() {
   fi
 }
 
-# PROMPT='%F{green}%n@%m%f:%F{blue}%2~%f %F{magenta}[$(_my_theme_vcs_info)]%f $ '
+PROMPT='%F{green}%n@%m%f:%F{blue}%2~%f %F{magenta}[$(_my_theme_vcs_info)]%f $ '
 
 # Cache the fuck
 THEFUCK_CACHE="$HOME/.cache/zsh/thefuck.zsh"
