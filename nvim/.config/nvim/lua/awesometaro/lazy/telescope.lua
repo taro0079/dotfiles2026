@@ -1,7 +1,6 @@
 return {
   "nvim-telescope/telescope.nvim",
 
-
   dependencies = {
     "nvim-lua/plenary.nvim",
     "nvim-telescope/telescope-ui-select.nvim",
@@ -21,10 +20,11 @@ return {
       builtin.find_files({ hidden = true, no_ignore = true })
     end, { desc = "Find File Via Telescope" })
     vim.keymap.set("n", "<leader>pp", builtin.git_files, { desc = "Find Git File Via Telescope" })
-        vim.keymap.set("n", "<leader>pc", builtin.git_status, { desc = "Telescope: Git Status" })
+    vim.keymap.set("n", "<leader>pc", builtin.git_status, { desc = "Telescope: Git Status" })
     vim.keymap.set("n", "<leader>pb", builtin.buffers, { desc = "Pick Buffer Via Telescope" })
     vim.keymap.set("n", "<leader>pm", builtin.marks, { desc = "Pick marks via telescope " })
     vim.keymap.set("n", "<leader>pq", builtin.live_grep, { desc = "Pick live grep  via telescope " })
+    vim.keymap.set("n", "<leader>cb", builtin.current_buffer_fuzzy_find, { desc = "Current Buffer Fuzzy Find" })
     vim.keymap.set("n", "<leader>pws", function()
       local word = vim.fn.expand("<cword>")
       builtin.grep_string({ search = word })
