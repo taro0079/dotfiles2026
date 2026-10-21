@@ -218,11 +218,11 @@ return {
     vim.lsp.enable("html")
     vim.lsp.enable("emmet_ls")
 
-    vim.lsp.config("test-generator", {
-      cmd = { "php-test-generator" },
-      filetypes = { "php" },
-      capabilities = capabilities,
-    })
+    -- vim.lsp.config("test-generator", {
+    --   cmd = { "php-test-generator" },
+    --   filetypes = { "php" },
+    --   capabilities = capabilities,
+    -- })
     vim.lsp.config("efm", {
       cmd = { "efm-langserver" },
       filetypes = { "php" },
@@ -243,15 +243,16 @@ return {
         end,
       },
       mapping = cmp.mapping.preset.insert({
-        ["<C-p>"] = cmp.mapping.select_prev_item(cmp_select),
-        ["<C-n>"] = cmp.mapping.select_next_item(cmp_select),
-        ["<C-y>"] = cmp.mapping.confirm({ select = true }),
+        ["<S-tab>"] = cmp.mapping.select_prev_item(cmp_select),
+        ["<tab>"] = cmp.mapping.select_next_item(cmp_select),
+        ["<cr>"] = cmp.mapping.confirm({ select = true }),
         ["<C-Space>"] = cmp.mapping.complete(),
       }),
       sources = cmp.config.sources({
+        { name = "nvim_lsp" },
         { name = "copilot", group_index = 2 },
         { name = "lazydev", group_index = 0 },
-        { name = "nvim_lsp" },
+        { name = "path" },
         { name = "luasnip" }, -- For luasnip users.
         {
           name = "spell",
