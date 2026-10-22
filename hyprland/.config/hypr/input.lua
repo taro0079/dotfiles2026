@@ -59,3 +59,8 @@ hl.device({
     name = "keychron-k8-pro-keyboard",
     kb_layout = "us",
 })
+
+hl.device({
+    name = "keychron-b1-pro-keyboard",
+    kb_layout = "us",
+})
