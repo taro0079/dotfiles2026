@@ -234,7 +234,7 @@ return {
     vim.lsp.enable("test-generator")
     vim.lsp.enable("efm")
 
-    local cmp_select = { behavior = cmp.SelectBehavior.Select }
+    local cmp_select = { behavior = cmp.SelectBehavior.Insert }
 
     cmp.setup({
       snippet = {
