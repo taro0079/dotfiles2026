@@ -6,11 +6,16 @@ return {
     "antoinemadec/FixCursorHold.nvim",
     "nvim-treesitter/nvim-treesitter",
     "olimorris/neotest-phpunit",
+    {
+      "fredrikaverpil/neotest-golang",
+      version = "*",
+    },
   },
   config = function()
     require("neotest").setup({
       adapters = {
         require("neotest-phpunit"),
+        require("neotest-golang")({}),
       },
     })
     vim.keymap.set("n", "<leader>tn", function()

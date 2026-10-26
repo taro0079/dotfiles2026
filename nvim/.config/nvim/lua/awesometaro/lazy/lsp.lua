@@ -67,6 +67,12 @@ return {
           vim.g.zig_fmt_parse_errors = 0
           vim.g.zig_fmt_autosave = 0
         end,
+        ["pyright"] = function()
+          vim.lsp.config("pyright", {
+            capabilities = capabilities,
+          })
+          vim.lsp.enable("pyright")
+        end,
         ["lua_ls"] = function()
           local lspconfig = require("lspconfig")
           vim.lsp.config("lua_ls", {
