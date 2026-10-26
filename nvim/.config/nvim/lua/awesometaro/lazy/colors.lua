@@ -19,7 +19,7 @@ return {
     lazy = false,
     priority = 1000,
     opts = {
-      transparent = false,
+      transparent = true,
     },
   },
   {
@@ -102,7 +102,7 @@ return {
         },
       })
 
-      ColorMyPencils("catppuccin-mocha")
+      ColorMyPencils("tokyonight")
     end,
   },
 }
