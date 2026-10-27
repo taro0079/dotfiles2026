@@ -260,6 +260,9 @@
                '((php-mode php-ts-mode) . ("mise" "exec" "node@20" "--" "env" "NODE_OPTIONS=--max-old-space-size=8192" "intelephense" "--stdio")))
   (add-to-list 'eglot-server-programs
                '(sql-mode . ("~/go/bin/sqls")))
+  (add-to-list 'eglot-server-programs
+               '((python-mode python-ts-mode)
+                 . ("pyright-langserver" "--stdio")))
 
   :hook
   ((python-ts-mode . eglot-ensure)
@@ -378,8 +381,46 @@
   :hook (org-mode . org-download-enable)
   :config
   (setq org-download-method 'directory)
-  (setq org-download-image-dir "./images")
-  (setq org-download-heading-lvl nil))
+  (setq-default org-download-image-dir "./images"
+                org-download-heading-lvl nil)
+
+  (defun my-org-download-clipboard-wayland (original &optional basename)
+    "Check Wayland clipboard capture before inserting an image.
+Call ORIGINAL with BASENAME on other platforms."
+    (if (not (and (eq system-type 'gnu/linux)
+                  (or (equal (getenv "XDG_SESSION_TYPE") "wayland")
+                      (getenv "WAYLAND_DISPLAY"))))
+        (funcall original basename)
+      (unless (executable-find "wl-paste")
+        (user-error "Please install wl-clipboard (wl-paste)"))
+      ;; A private directory avoids stale screenshots and concurrent captures.
+      (let* ((capture-dir (make-temp-file "org-download-" t))
+             (org-download-screenshot-file
+              (expand-file-name
+               (file-name-nondirectory
+                (or basename org-download-screenshot-file))
+               capture-dir)))
+        (unwind-protect
+            (progn
+              (with-temp-buffer
+                (set-buffer-multibyte nil)
+                (let* ((coding-system-for-read 'binary)
+                       (status (call-process "wl-paste" nil '(t nil) nil
+                                             "--type" "image/png")))
+                  (unless (and (eq status 0)
+                               (>= (buffer-size) 8)
+                               (equal (buffer-substring-no-properties 1 9)
+                                      (unibyte-string 137 80 78 71 13 10 26 10)))
+                    (user-error "Could not read a PNG image from the clipboard; copy an image first")))
+                (let ((coding-system-for-write 'binary))
+                  (write-region (point-min) (point-max)
+                                org-download-screenshot-file nil 'silent)))
+              (org-id-get-create)
+              (org-download-image org-download-screenshot-file))
+          (delete-directory capture-dir t)))))
+
+  (advice-add 'org-download-clipboard :around
+              #'my-org-download-clipboard-wayland))
 
 
 (use-package majutsu
