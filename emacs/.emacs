@@ -22,9 +22,9 @@
 (setq-default tab-width 4)
 (global-display-line-numbers-mode t)
 (global-auto-revert-mode 1)
-(let ((mono-spaced-font "Mint Mono")
+(let ((mono-spaced-font "JetBrainsMono Nerd Font")
       (proportionately-spaced-font "Sans"))
-  (set-face-attribute 'default nil :family mono-spaced-font :height 140)
+  (set-face-attribute 'default nil :family mono-spaced-font :height 200)
   (set-face-attribute 'fixed-pitch nil :family mono-spaced-font :height 1.0)
   (set-face-attribute 'variable-pitch nil :family proportionately-spaced-font :height 1.0))
 
@@ -580,7 +580,7 @@
 (use-package ef-themes
   :straight t
   :config
-  (load-theme 'ef-day)
+  (load-theme 'ef-duo-dark)
   )
 
 (use-package org-modern
