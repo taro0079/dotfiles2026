@@ -1,6 +1,6 @@
 theme = "tokyonight"
 [editor]
-rainbow-brackets = true
+# rainbow-brackets = true
 line-number = "relative"
 mouse = true
 true-color = true
