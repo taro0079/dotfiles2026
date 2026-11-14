@@ -135,3 +135,5 @@ alias le='exa -la'
 # パフォーマンス計測用↑
 
 
+[[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code --locate-shell-integration-path zsh)"
+

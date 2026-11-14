@@ -456,6 +456,7 @@ Call ORIGINAL with BASENAME on other platforms."
    ("C-c a" . org-agenda)
    ("C-c i" . (lambda () (interactive) (find-file "~/memos/inbox.org"))))
   :config
+  (setq org-use-sub-superscripts '{})
   (setq org-babel-python-command "python3")
   (org-babel-do-load-languages
    'org-babel-load-languages
@@ -560,6 +561,9 @@ Call ORIGINAL with BASENAME on other platforms."
   :hook
   (LaTeX-mode . turn-on-reftex)
   :config
+  (add-to-list 'TeX-command-list
+               '("LuaLaTeX" "lualatex -synctex=1 %s" TeX-run-TeX nil t
+                 :help "Run LuaLaTeX"))
   (setq TeX-source-correlate-mode t)
   (setq TeX-source-correlate-start-server t)
   (setq TeX-auto-save t)
