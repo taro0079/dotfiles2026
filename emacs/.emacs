@@ -61,16 +61,6 @@
 (require 'straight-x)
 (straight-use-package 'use-package)
 
-;; Kibela: 認証情報は ~/.emacs.d/private-kibela.el に保存する。
-;; 設定例は emacs/private-kibela.el.example を参照。
-(use-package kibela
-  :straight (:type git :host github :repo "mugijiru/emacs-kibela")
-  :commands (kibela-switch-team
-             kibela-group-notes
-             kibela-recent-browsing-notes)
-  :init
-  (load (expand-file-name "private-kibela.el" user-emacs-directory) t))
-
 ;; Org の画像や長い行もピクセル単位で滑らかにスクロールする。
 (use-package ultra-scroll
   :straight (:host github :repo "jdtsmith/ultra-scroll")
@@ -98,21 +88,6 @@
                       ))
   :mode "\\.php\\'"
     )
-;; PHPStan (静的解析) を flymake のバックエンドとして利用する。
-;; プロジェクトごとの設定 (実行ファイル・level・config) は .dir-locals.el で行う。
-;; 例:
-;;   ((nil . ((php-project-root . auto)
-;;            (phpstan-executable . (root . "vendor/bin/phpstan"))
-;;            (phpstan-level . max))))
-(use-package phpstan
-  :straight t
-  :after php-mode)
-;; flymake-phpstan-turn-on は phpstan ではなく flymake-phpstan パッケージに定義されているため
-;; こちらで hook を設定する (phpstan 側の :hook に書くと autoload に失敗する)
-(use-package flymake-phpstan
-  :straight t
-  :after phpstan
-  :hook (php-mode . flymake-phpstan-turn-on))
 (use-package ddskk
   :straight t
   :bind
@@ -200,7 +175,7 @@
 (use-package avy
   :straight t
   :bind (("C-:" . avy-goto-char)
-         ("C-'" . avy-goto-char2)
+         ("C-'" . avy-goto-char-2)
          ("M-g w" . avy-goto-word1)
          ("M-g l" . avy-goto-line)))
 (use-package consult-ghq
@@ -210,19 +185,14 @@
   ("C-c g f" . consult-ghq-find)
   ("C-c g g" . consult-ghq-grep))
 
-;; (use-package fzf
-;;   :ensure t
-;;   :bind
-;;   (("C-c f f" . fzf-find-file)
-;;    ("C-c f g" . fzf-grep)
-;;    ("C-c f b" . fzf-switch-buffer)))
+(use-package fzf
+  :ensure t
+  :bind
+  (("C-c f f" . fzf-find-file)
+   ("C-c f g" . fzf-grep)
+   ("C-c f b" . fzf-switch-buffer)))
 
 
-;; (use-package inkpot-theme
-;;   :straight t
-;;   :config
-;;   (load-theme 'inkpot)
-;;   )
 (with-eval-after-load 'eglot
   (defun my-eglot-disable-file-watching (orig-fn &rest args)
     (let ((caps (apply orig-fn args)))
@@ -363,7 +333,6 @@
   (diff-hl-margin-mode 1))
 ;;  (add-hook 'dired-mode-hook 'diff-hl-dired-mode-hook))
 
-
 (use-package magit
   :straight t
   :custom
@@ -428,20 +397,6 @@ Call ORIGINAL with BASENAME on other platforms."
 
 (put 'upcase-region 'disabled nil)
 
-(use-package web-mode
-  :ensure t
-  :mode ("\\.tpl\\'" . web-mode)
-  :custom
-  (web-mode-markup-indent-offset 4)
-  (web-mode-css-indent-offset 4)
-  (web-mode-code-indent-offset 4)
-  (web-mode-attr-indent-offset 4)
-  (web-mode-enable-auto-pairing t)
-  (web-mode-enable-css-colorization t)
-
-  :config
-  (add-to-list 'web-mode-engines-alist '("smarty" . "\\.tpl\\'")))
-
 ;; org
 (custom-set-faces
  '(org-document-title ((t (:height 1.8 :weight bold))))
@@ -499,8 +454,6 @@ Call ORIGINAL with BASENAME on other platforms."
   (org-capture-templates
    '(("t" "Task" entry (file+headline org-default-notes-file "Tasks")
       "* TODO %?\n SCHEDULED: %t\n :PROPERTIES:\n :CREATED: %U\n :END:\n")
-     ("d" "Daily Scrum" entry (file+headline org-default-notes-file "Daily Scrum")
-      "* Daily Scrum %U\n** 仙石さん\n** 森屋さん\n** 根橋さん\n** 中尾さん\n** 内山さん\n** 森田\n** 全体")
      ("n" "Note" entry (file+headline org-default-notes-file "Notes")
       "* %?\n created_at: %U\n %i")
      ("m" "Mail" entry (file+headline org-default-notes-file "Mails")
@@ -548,7 +501,6 @@ Call ORIGINAL with BASENAME on other platforms."
              (file+head "%<%Y-%m-%d>.org"
                         "#+title: %<%Y-%m-%d>\n\n")))))
   (org-roam-db-autosync-mode))
-
 
 (use-package flyspell
   :hook
@@ -691,25 +643,6 @@ Call ORIGINAL with BASENAME on other platforms."
       (while (org-up-heading-safe)
         (push (cons (current-buffer) (point)) ancestors))
       (list :id id :ancestors ancestors :title title))))
-
-(defun my-org-daily-report-format-tasks (tasks)
-  "TASKSを親子関係に従ってSlack用の箇条書きへ変換する。"
-  (if (null tasks)
-      "• なし"
-    (let ((selected (make-hash-table :test 'equal)))
-      (dolist (task tasks)
-        (puthash (plist-get task :id) t selected))
-      (mapconcat
-       (lambda (task)
-         (let ((depth 0))
-           (dolist (ancestor (plist-get task :ancestors))
-             (when (gethash ancestor selected)
-               (setq depth (1+ depth))))
-           (concat (make-string (* 2 depth) ?\s)
-                   "• "
-                   (plist-get task :title))))
-       tasks
-       "\n"))))
 
 (defun my-org-daily-report ()
   "Org agenda filesからSlack用の日報を生成してkill-ringへコピーする。"
