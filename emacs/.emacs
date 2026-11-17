@@ -603,29 +603,6 @@ Call ORIGINAL with BASENAME on other platforms."
                          (?\s . "☐")))  
   )
 
-(defun my/rpst-gen-test ()
-  "現在のファイルの相対パスを引数にテストを生成し、作成されたファイルを展開する"
-  (interactive)
-  (let* ((pr (project-current t))
-         (root (project-root pr))
-         (filename (buffer-file-name))
-         ;; 1. プロジェクトルートからの相対パスを取得
-         (rel-path (file-relative-name filename root))
-         ;; 2. 実行するスクリプト名
-         (script-name "rpst-test-utils")
-         ;; 3. 実行ディレクトリをプロジェクトルートに固定
-         (default-directory root))
-    (if filename
-        (let* ((cmd (concat script-name " generate test " (shell-quote-argument rel-path)))
-               (raw-output (shell-command-to-string cmd))
-               (output (string-trim raw-output)))
-          ;; 4. 出力から "create パス" を探してファイルを開く
-          (if (string-match "create\\s-+\\(.+\\)$" output)
-              (let ((created-path (match-string 1 output)))
-                (find-file (expand-file-name created-path root)))
-            (message "Test generation failed or unexpected output: %s" output)))
-      (message "Current buffer is not visiting a file."))))
-
 (defun my/org-region-to-markdown (beg end)
   "Convert selected Org region to Markdown and copy it"
   (interactive "r")
@@ -644,67 +621,19 @@ Call ORIGINAL with BASENAME on other platforms."
         (push (cons (current-buffer) (point)) ancestors))
       (list :id id :ancestors ancestors :title title))))
 
-(defun my-org-daily-report ()
-  "Org agenda filesからSlack用の日報を生成してkill-ringへコピーする。"
-  (interactive)
-  (let* ((today (format-time-string "%Y-%m-%d"))
-         (tomorrow
-          (format-time-string
-           "%Y-%m-%d"
-           (time-add (current-time) (days-to-time 1))))
-         (done '())
-         (doing '())
-         (tomorrow-tasks '()))
-
-    (org-map-entries
-     (lambda ()
-       (let* ((title (org-get-heading t t t t))
-              (todo (org-get-todo-state))
-              (closed (org-entry-get nil "CLOSED"))
-              (scheduled (org-entry-get nil "SCHEDULED"))
-              (entry (my-org-daily-report-entry title)))
-
-         ;; 今日完了したタスク
-         (when (and closed
-                    (string-match-p today closed))
-           (push entry done))
-
-         ;; 今日予定されている未完了タスク
-         (when (and scheduled
-                    (string-match-p today scheduled)
-                    todo
-                    (not (member todo org-done-keywords)))
-           (push entry doing))
-
-         ;; 明日の予定
-         (when (and scheduled
-                    (string-match-p tomorrow scheduled)
-                    todo
-                    (not (member todo org-done-keywords)))
-           (push entry tomorrow-tasks))))
-     t
-     'agenda)
-
-    (let ((report
-           (concat
-            (format "*日報 %s*\n\n" today)
-
-            "*完了*\n"
-            (my-org-daily-report-format-tasks (nreverse done))
-
-            "\n\n*進行中*\n"
-            (my-org-daily-report-format-tasks (nreverse doing))
-
-            "\n\n*明日の予定*\n"
-            (my-org-daily-report-format-tasks (nreverse tomorrow-tasks)))))
-
-      (kill-new report)
-
-      (with-current-buffer
-          (get-buffer-create "*Org Daily Report*")
-        (erase-buffer)
-        (insert report)
-        (goto-char (point-min))
-        (display-buffer (current-buffer)))
-
-      (message "Slack用日報をクリップボードにコピーしました。"))))
+(defun my/wsl-copy-to-clipboard (text &rest _)
+  "TEXTをwindowsのクリップボードに送信する"
+  (let ((coding-system-for-write 'utf-16le-dos))
+    (with-temp-buffer
+      (insert text)
+      (call-process-region
+       (point-min) (point-max)
+       "/mnt/c/Windows/System32/clip.exe"
+       nil nil nil))))
+(cond
+ ((eq system-type 'darwin)
+  (setq select-enable-clipboard t))
+ ((and (eq system-type 'gnu/linux)
+       (or (getenv "WSL_DISTRO_NAME")
+           (getenv "WSL_INTEROP")))
+  (setq interprogram-cut-function #'my/wsl-copy-to-clipboard)))
