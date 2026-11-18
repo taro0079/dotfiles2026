@@ -22,7 +22,7 @@
 (setq-default tab-width 4)
 (global-display-line-numbers-mode t)
 (global-auto-revert-mode 1)
-(let ((mono-spaced-font "JetBrainsMono Nerd Font")
+(let ((mono-spaced-font "Cascadia Code")
       (proportionately-spaced-font "Sans"))
   (set-face-attribute 'default nil :family mono-spaced-font :height 140)
   (set-face-attribute 'fixed-pitch nil :family mono-spaced-font :height 1.0)
@@ -217,6 +217,20 @@
   (citar-bibliography
    '("~/memos/roam/references.bib")))  
 
+;; uv の標準環境 (.venv) を Pyright と Python REPL で共有する。
+(defun my-python-eglot-ensure ()
+  "Use the nearest .venv for Python completion, then start Eglot."
+  (let* ((root (locate-dominating-file default-directory ".venv"))
+         (python (and root (expand-file-name ".venv/bin/python" root))))
+    (when (and python (file-executable-p python))
+      (setq-local python-shell-interpreter python)
+      (setq-local eglot-workspace-configuration
+                  (let* ((config (copy-tree eglot-workspace-configuration))
+                         (settings (plist-get config :python)))
+                    (plist-put config :python
+                               (plist-put settings :pythonPath python))))))
+  (eglot-ensure))
+
 ;; サーバープログラムの設定 (Node 20とメモリ拡張の安全設定は維持)
 (use-package eglot
   :straight t
@@ -231,11 +245,12 @@
   (add-to-list 'eglot-server-programs
                '(sql-mode . ("~/go/bin/sqls")))
   (add-to-list 'eglot-server-programs
-               '((python-mode python-ts-mode)
-                 . ("pyright-langserver" "--stdio")))
+               `((python-mode python-ts-mode)
+                 . (,(expand-file-name "~/.local/bin/pyright-langserver") "--stdio")))
 
   :hook
-  ((python-ts-mode . eglot-ensure)
+  ((python-mode . my-python-eglot-ensure)
+   (python-ts-mode . my-python-eglot-ensure)
    (lua-ts-mode . eglot-ensure)
    (go-ts-mode . eglot-ensure)
    (go-mode . eglot-ensure)
